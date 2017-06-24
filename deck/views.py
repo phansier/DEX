@@ -6,14 +6,15 @@ from django.http import HttpResponse
 import requests
 
 # import pandas as pd
-
+#req = json.loads( request.body.decode('utf-8') )
 
 @login_required
 def index(request):
     # url = 'http://iss.moex.com/iss/engines/futures/markets/forts/securities.json'
     url = 'http://iss.moex.com/iss/engines/futures/markets/forts/securities.json?iss.json=extended'
     obj = requests.get(url)
-    data = json.loads(obj.content)
+    #data = json.loads(obj.content)
+    data = json.loads(obj.content.decode('utf-8'))
     # df1 = pd.DataFrame(data['securities']['data'],columns=data['securities']['metadata'])
     return render(request,'deck/deck_home.html',{'data':data[1]['securities'][1]})
 
