@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!--this is the very dark blue: #0b3763 -->
+<!-- #FFFFFF	 -->
+<!-- #CCD1D1 -->
+<head>
+	<title>Moskvant</title>
+	<meta charset="utf-8" />
+	{% load staticfiles %}
+	<link rel="stylesheet" href="{% static 'landing/css/bootstrap.min.css' %}" type = "text/css"/>
+
+	<link href="{% static 'landing/css/onelink.css' %}" media="all" rel="stylesheet" type="text/css" />
+	<link rel="shortcut icon" href="{% static 'landing/img/iconicon.png' %}">
+	<meta name="viewport" content = "width=device-width, initial-scale=1.0">
+
+	<script src="{% static 'landing/js/firstlink.js' %}" type="text/javascript"></script>
+	<!-- <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Lato:400,700" /> -->
+	<link href='https://fonts.googleapis.com/css?family=Lato:100' rel='stylesheet' type='text/css'>
+	<!-- <meta name="viewport" content = "width=device-width, initial-scale=1.0"> -->
+
+	<style type="text/css">
+		html,
+		body {height:100%;}
+		body { padding-bottom: 70px; }
+		a {color: #FFFFFF; font-family: Lato; font-size: 8;}
+		a:hover {color: #FFFFFF}
+		h2 {font-family: Lato; text-align: center; color:#FFFFFF; font-size: 80px;}
+		h1 {color:#FFFFFF}
+		p {color:#FFFFFF; font-family: Lato;}
+		footer {position: fixed; height: 50px; bottom: 0; width: 100%;}
+		.value {color:white}
+
+
+
+	</style>
+
+</head>
+<body style="background-color:#313132">
+<!-- <body class="pull-top" style="background-color:#1e2b34"> -->
+
+	<script src="{% static 'landing/js/fourthlink.js' %}" type="text/javascript"></script>
+
+	<div class='homepage'>
+		<div class='jumpy-numbers hidden'>
+		  <div class='price x-small layer' data-depth='1.30' id='l1'>
+		  <h1>.</h1>
+ 		  <div class='value group1'>4.03</div>
+ 		  <div class='up'></div>
+		  </div>
+		  <div class='price small layer' data-depth='0.70' id='l2'>
+		  <h1>.</h1>
+ 		  <div class='value group2'>6.68</div>
+		  <div class='up'></div>
+		  </div>
+		  <div class='price medium layer' data-depth='0.80' id='l3'>
+		  <h1>.</h1>
+ 		  <div class='value group3'>44.63</div>
+ 		  <div class='up'></div>
+		  </div>
+		  <div class='price x-small layer' data-depth='0.30' id='l4'>
+		  <h1>.</h1>
+ 		  <div class='value'>9.76</div>
+ 		  <div class='up'></div>
+		  </div>
+		  <div class='price large layer' data-depth='5.00' id='l5'>
+		  <h1>.</h1>
+ 		  <div class='value group3'>11.71</div>
+		  <div class='up'></div>
+		  </div>
+		  <div class='price medium layer' data-depth='0.80' id='l6'>
+		  <h1>.</h1>
+ 		  <div class='value group1'>2.72</div>
+		  <div class='up'></div>
+		  </div>
+		  <div class='price small layer' data-depth='0.70' id='l7'>
+		  <h1>.</h1>
+ 		  <div class='value group3'>37.98</div>
+		  <div class='up'></div>
+		  </div>
+		  <div class='price x-small layer' data-depth='0.30' id='l8'>
+		  <h1>.</h1>
+ 		  <div class='value'>7.06</div>
+		  <div class='up'></div>
+		  </div>
+		  <div class='price x-small layer' data-depth='0.50' id='r1'>
+		  <h1>.</h1>
+ 		  <div class='value group1'>1.09</div>
+		  <div class='up'></div>
+		  </div>
+		  <div class='price medium layer' data-depth='0.80' id='r2'>
+		  <h1>.</h1>
+ 		  <div class='value group2'>8.68</div>
+		  <div class='up'></div>
+		  </div>
+		  <div class='price x-small layer' data-depth='0.30' id='r3'>
+		  <h1>.</h1>
+ 		  <div class='value'>9.76</div>
+		  <div class='up'></div>
+		  </div>
+		  <div class='price large layer' data-depth='1.00' id='r4'>
+		  <h1>.</h1>
+ 		  <div class='value group1'>5.96</div>
+		  <div class='up'></div>
+		  </div>
+		  <div class='price x-small layer' data-depth='0.50' id='r5'>
+		  <h1>.</h1>
+ 		  <div class='value group3'>1.11</div>
+		  <div class='up'></div>
+		  </div>
+		  <div class='price small layer' data-depth='0.7' id='r6'>
+		  <h1>.</h1>
+ 		  <div class='value group1'>12.25</div>
+		  <div class='up'></div>
+		  </div>
+		  <div class='price large layer' data-depth='1.00' id='r7'>
+		  <h1>.</h1>
+		  <div class='value group2'>0</div>
+		  <div class='up'></div>
+		  </div>
+		  <div class='price x-small layer' data-depth='0.5' id='r8'>
+		  <h1>.</h1>
+ 		  <div class='value'>5.28</div>
+		  <div class='up'></div>
+		  </div>
+		  <div class='price x-small layer' data-depth='0.5' id='r9'>
+		  <h1>.</h1>
+ 		  <div class='value'>5.76</div>
+		  <div class='up'></div>
+		  </div>
+
+		</div>
+	<script>
+	  //<![CDATA[
+	    $(document).ready(function() {
+	      moskvant.instances.hpm = new moskvant.HomepageManager();
+	    })
+	  //]]>
+	</script>
+
+	</div>
+	<!-- <div class="well bs-sidebar" id="sidebar" > -->
+
+	<!-- <nav class="navbar navbar-default navbar-fixed-top"> -->
+  <!-- <div class="container">
+		<ul class="nav nav-pills">
+		<li><a href='/' >Home</a></li>
+		<li><a href='http://blog.moskvant.com/'>Blog</a></li>
+		<li><a href='/about/'>About</a></li>
+		</ul>
+  </div> -->
+
+
+
+
+
+<td style="width:100%; height:100%;">
+ <h2 style="position:absolute;top: 50%; left: 50%;">MOSKVANT</h2>
+</td>
+<div class="col-sm-10" style='margin-left:50px'>
+
+			<div class='container-fluid'>
+			<br><br>
+			   {% block content %}
+			   {% endblock %}
+			</div>
+		  </div>
+	<!-- <h2>moskvant</h2> -->
+<!-- </nav> -->
+
+		<!--
+
+		 -->
+	<!-- </div> -->
+
+<footer>
+		<div class="container-fluid" style='margin-left:50px'>
+			<p class='lead'><a href="/accounts/login"> LOG IN </a> | <a href="/contact/"> ABOUT </a> </p>
+		</div>
+</footer>
+
+</body>
+
+
+
+
+
+
+
+<body class="body" style="background-color: #CCD1D1">
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- <div class="row">
+  <div class="col-md-4">.col-md-4</div>
+  <div class="col-md-4"><h1>Moskvant</h1></div>
+  <div class="col-md-4">.col-md-4</div>
+</div> -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- </body>	 -->
+</body>
+
+
+
+</html>

@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<!--[if IE 9 ]><html class="ie ie9" lang="en" class="no-js"> <![endif]-->
+<!--[if !(IE)]><!-->
+<html lang="en" class="no-js">
+<!--<![endif]-->
+
+<head>
+	<title>Moskant DASH</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="description" content="KingAdmin - Bootstrap Admin Dashboard Theme">
+	<meta name="author" content="The Develovers">
+	<!-- CSS -->
+  {% load staticfiles %}
+	<link href="{% static "deck/assets/css/bootstrap.min.css" %}" rel="stylesheet" type="text/css">
+	<link href="{% static "deck/assets/css/font-awesome.min.css" %}" rel="stylesheet" type="text/css">
+	<link href="{% static "deck/assets/css/main.css" %}" rel="stylesheet" type="text/css">
+	<link href="{% static "deck/assets/css/my-custom-styles.css" %}" rel="stylesheet" type="text/css">
+  <link href="{% static "deck/assets/css/skins/transparent.css" %}" rel="stylesheet" type="text/css">
+
+
+
+  <link href='https://fonts.googleapis.com/css?family=Lato:100' rel='stylesheet' type='text/css'>
+
+  <!--[if lte IE 9]>
+		<link href="assets/css/main-ie.css" rel="stylesheet" type="text/css"/>
+		<link href="assets/css/main-ie-part2.css" rel="stylesheet" type="text/css"/>
+	<![endif]-->
+	<!-- CSS for demo style switcher. you can remove this -->
+
+
+  <!-- <link src="assets/css/style-switcher.css" rel="stylesheet" type="text/css"> -->
+
+
+
+  <!-- Fav and touch icons -->
+	<!-- <link rel="apple-touch-icon-precomposed" sizes="144x144" href="assets/ico/kingadmin-favicon144x144.png"> -->
+	<!-- <link rel="apple-touch-icon-precomposed" sizes="114x114" href="assets/ico/kingadmin-favicon114x114.png"> -->
+	<!-- <link rel="apple-touch-icon-precomposed" sizes="72x72" href="assets/ico/kingadmin-favicon72x72.png"> -->
+	<!-- <link rel="apple-touch-icon-precomposed" sizes="57x57" href="assets/ico/kingadmin-favicon57x57.png"> -->
+	<!-- <link rel="shortcut icon" href="assets/ico/favicon.png"> -->
+  <style>
+  html,
+  body {height:100%;background-color: #313132}
+  body { padding-bottom: 70px; }
+  a {color: #FFFFFF; font-family: Lato; font-size: 8;}
+  a:hover {color: #FFFFFF}
+  .name {font-family: Lato; text-align: center; color:#FFFFFF;}
+  h1 {color:#FFFFFF}
+  p {color:#FFFFFF; font-family: Lato;}
+  footer {position: fixed; height: 50px; bottom: 0; width: 100%; color: #313132;}
+  .value {color:white}
+
+
+
+	td {
+		color: white
+	}
+  /*.navbar-fixed-top {
+    background-color: #151515;
+  }
+  .content-wrapper {
+    background-color: #2a2a2a;
+    color: #303030;
+  }*/
+	.red1 {
+		background-color:red;
+		color:white;
+	}
+	.table-striped > tbody > tr:nth-child(odd) > td.red2 {
+		background-color:red;
+		color:white;
+	 }
+   .panel-body {
+    padding: 0;
+}
+  .widget-content {
+    padding: 0;
+  }
+  .panel-group {
+    margin-top: 0 !important;
+}
+  .content-wrapper {
+    /*background-color: black;*/
+    padding: 0;
+  }
+  .wrapper {
+    background-color: #313132;
+    padding: 0;
+  }
+  .auto-align {
+    padding: 0;
+  }
+  </style>
+  <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+  <script src="https://code.highcharts.com/stock/highstock.js"></script>
+  <!-- <script src="http://code.highcharts.com/highcharts.js"></script> -->
+  <script src="https://code.highcharts.com/stock/modules/exporting.js"></script>
+  <script src="http://0.0.0.0:8000/static/deck/js/themes/dark-unica.js"></script>
+  <!-- <script>
+  function draw_chart(ticker) {
+
+
+
+  var url2 = 'http://iss.moex.com/iss/engines/futures/markets/forts/securities/'+ticker+'/candles.json?from=2010-08-08&till=2017-06-21&interval=24&start=0&iss.meta=off'
+  $.getJSON(url2, function (data) {
+
+  // split the data set into ohlc and volume
+  var ohlc = [],
+      volume = [],
+      data = data.candles.data
+      dataLength = data.length,
+      // set the allowed units for data grouping
+      // groupingUnits = [[
+      //     'week',                         // unit name
+      //     [1]                             // allowed multiples
+      // ], [
+      //     'month',
+      //     [1, 2, 3, 4, 6]
+      // ]],
+
+      i = 0;
+
+  for (i; i < dataLength; i += 1) {
+      ohlc.push([
+          Date.parse(data[i][6]), // the date
+          data[i][0], // open
+          data[i][2], // high
+          data[i][3], // low
+          data[i][1] // close
+      ]);
+
+      volume.push([
+          Date.parse(data[i][6]), // the date
+          data[i][5] // the volume
+      ]);
+  }
+
+
+  // create the chart
+  Highcharts.stockChart('wrtc', {
+
+      rangeSelector: {
+          selected: 1
+      },
+
+      title: {
+          text: ticker
+      },
+
+      yAxis: [{
+          labels: {
+              align: 'right',
+              x: -3
+          },
+          title: {
+              text: 'OHLC'
+          },
+          height: '60%',
+          lineWidth: 2
+      }, {
+          labels: {
+              align: 'right',
+              x: -3
+          },
+          title: {
+              text: 'Volume'
+          },
+          top: '65%',
+          height: '35%',
+          offset: 0,
+          lineWidth: 2
+      }],
+
+      tooltip: {
+          split: true
+      },
+
+      series: [{
+          type: 'candlestick',
+          name: 'AAPL',
+          data: ohlc,
+          dataGrouping: {
+              // units: groupingUnits
+          }
+      }, {
+          type: 'column',
+          name: 'Volume',
+          data: volume,
+          yAxis: 1,
+          dataGrouping: {
+              // units: groupingUnits
+          }
+      }]
+  });
+})
+};
+
+  $('reflow-chart').click(function () {
+    chart.reflow();
+});
+  </script> -->
+  <!-- <script>
+  $("#menu-toggle").click(function(e) {
+e.preventDefault();
+$("#wrapper").toggleClass("toggled");
+setInterval(function() {
+  $("container_1").highcharts().reflow();
+}, 1);
+});
+
+High Chart JS
+$(function () {
+$('container_1').highcharts({
+
+  backgroundColor: {
+    stops: [
+      [0, '#2a2a2b'],
+      [1, '#3e3e40']
+    ]
+  },
+  chart: {
+    type: 'area',
+    backgroundColor: "#000"
+  },
+  title: {
+    text: 'US and USSR nuclear stockpiles',
+    color: '#fff'
+  },
+  subtitle: {
+    text: 'Source: <a>' +
+    'Xylines</a>'
+  },
+  xAxis: {
+    allowDecimals: false,
+    labels: {
+      formatter: function () {
+        return this.value; // clean, unformatted number for year
+      }
+    }
+  },
+  yAxis: {
+    title: {
+      text: 'Nuclear weapon states'
+    },
+    labels: {
+      formatter: function () {
+        return this.value / 1000 + 'k';
+      }
+    }
+  },
+  tooltip: {
+    pointFormat: '{series.name} produced <b>{point.y:,.0f}</b><br/>warheads in {point.x}'
+  },
+  plotOptions: {
+    area: {
+      pointStart: 1940,
+      marker: {
+        enabled: false,
+        symbol: 'circle',
+        radius: 2,
+        states: {
+          hover: {
+            enabled: true
+          }
+        }
+      }
+    }
+  },
+  series: [{
+    name: 'USA',
+    data: [null, null, null, null, null, 6, 11, 32, 110, 235, 369, 640,
+           1005, 1436, 2063, 3057, 4618, 6444, 9822, 15468, 20434, 24126,
+           27387, 29459, 31056, 31982, 32040, 31233, 29224, 27342, 26662,
+           26956, 27912, 28999, 28965, 27826, 25579, 25722, 24826, 24605,
+           24304, 23464, 23708, 24099, 24357, 24237, 24401, 24344, 23586,
+           22380, 21004, 17287, 14747, 13076, 12555, 12144, 11009, 10950,
+           10871, 10824, 10577, 10527, 10475, 10421, 10358, 10295, 10104]
+  }, {
+    name: 'USSR/Russia',
+    data: [null, null, null, null, null, null, null, null, null, null,
+           5, 25, 50, 120, 150, 200, 426, 660, 869, 1060, 1605, 2471, 3322,
+           4238, 5221, 6129, 7089, 8339, 9399, 10538, 11643, 13092, 14478,
+           15915, 17385, 19055, 21205, 23044, 25393, 27935, 30062, 32049,
+           33952, 35804, 37431, 39197, 45000, 43000, 41000, 39000, 37000,
+           35000, 33000, 31000, 29000, 27000, 25000, 24000, 23000, 22000,
+           21000, 20000, 19000, 18000, 18000, 17000, 16000]
+  }]
+});
+});
+  </script> -->
+  <!-- <script>
+  $(Highcharts.charts).each(function(i,chart){
+    var height = chart.renderTo.clientHeight;
+    var width = chart.renderTo.clientWidth;
+    chart.setSize(width, height);
+    chart.reflow()
+  });
+  </script>
+  <script>
+  $(window).resize(function() {
+    height = chart.height
+    width = $("#chartRow").width() / 2
+    chart.setSize(width, height, doAnimation = true);
+});
+  </script> -->
+
+</head>
+
+<body class="sidebar-fixed topnav-fixed dashboard">
+  <div id="wrapper" class="wrapper">
+  		<!-- TOP BAR -->
+  		<div class="top-bar navbar-fixed-top">
+  			<div class="container">
+  				<div class="clearfix">
+  					<a id="reflow-chart" href="#" class="pull-left toggle-sidebar-collapse"><i class="fa fa-bars"></i></a>
+  					<!-- logo -->
+  					<div class="pull-left left logo">
+  						<!-- <a href="index.html"><img src="assets/img/kingadmin-logo-white.png" alt="KingAdmin - Admin Dashboard" /></a> -->
+  						<h1 class="sr-only">KingAdmin Admin Dashboard</h1>
+  					</div>
+  					<!-- end logo -->
+  					<div class="pull-right right">
+  						<!-- search box -->
+  						<!-- <div class="searchbox">
+  							<div id="tour-searchbox" class="input-group">
+  								<input type="search" class="form-control" placeholder="enter keyword here...">
+  								<span class="input-group-btn">
+  									<button class="btn btn-default" type="button"><i class="fa fa-search"></i></button>
+  								</span>
+  							</div>
+  						</div> -->
+  						<!-- end search box -->
+  						<!-- top-bar-right -->
+  						<div class="top-bar-right">
+  							<!-- <button type="button" id="start-tour" class="btn btn-link"><i class="fa fa-refresh"></i> Start Tour</button>
+  							<button type="button" id="global-volume" class="btn btn-link btn-global-volume"><i class="fa"></i></button> -->
+                <!-- NOTIFICATIONS -->
+
+  							<!-- logged user and the menu -->
+                <!-- <div id="collapse1">
+                  Hi
+                </div> -->
+  							<div class="logged-user">
+  								<div class="btn-group">
+  									<a href="#" class="btn btn-link dropdown-toggle" data-toggle="dropdown">
+  										<!-- <img src="assets/img/user-avatar.png" alt="User Avatar" /> -->
+  										<span class="name">
+                        J Bernardo
+                      </span> <span class="caret"></span>
+  									</a>
+  									<ul class="dropdown-menu" role="menu">
+  										<li>
+  											<a href="#">
+  												<i class="fa fa-user"></i>
+  												<span class="text">Profile</span>
+  											</a>
+  										</li>
+  										<li>
+  											<a href="#">
+  												<i class="fa fa-cog"></i>
+  												<span class="text">Settings</span>
+  											</a>
+  										</li>
+  										<li>
+  											<a href="#">
+  												<i class="fa fa-power-off"></i>
+  												<span class="text">Logout</span>
+  											</a>
+  										</li>
+  									</ul>
+  								</div>
+  							</div>
+  							<!-- end logged user and the menu -->
+  						</div>
+  						<!-- end top-bar-right -->
+  					</div>
+  				</div>
+  			</div>
+  			<!-- /container -->
+  		</div>
+  		<!-- END TOP BAR -->
+  		<!-- LEFT SIDEBAR -->
+      {% block content %}
+      {% endblock %}
+  		<!-- END CONTENT WRAPPER -->
+  	</div>
+  {% load staticfiles %}
+  	<script src="{% static "deck/assets/js/jquery/jquery-2.1.0.min.js" %}"></script>
+  	<script src="{% static "deck/assets/js/bootstrap/bootstrap.js" %}"></script>
+  	<script src="{% static "deck/assets/js/plugins/modernizr/modernizr.js" %}"></script>
+  	<script src="{% static "deck/assets/js/plugins/bootstrap-tour/bootstrap-tour.custom.js" %}"></script>
+  	<script src="{% static "deck/assets/js/plugins/jquery-slimscroll/jquery.slimscroll.min.js" %}"></script>
+  	<script src="{% static "deck/assets/js/king-common.js" %}"></script>
+  	<script src="{% static "deck/assets/js/plugins/stat/jquery.easypiechart.min.js" %}"></script>
+  	<script src="{% static "deck/assets/js/plugins/raphael/raphael-2.1.0.min.js" %}"></script>
+  	<script src="{% static "deck/assets/js/plugins/stat/flot/jquery.flot.min.js" %}"></script>
+  	<script src="{% static "deck/assets/js/plugins/stat/flot/jquery.flot.resize.min.js" %}"></script>
+  	<script src="{% static "deck/assets/js/plugins/stat/flot/jquery.flot.time.min.js" %}"></script>
+  	<script src="{% static "deck/assets/js/plugins/stat/flot/jquery.flot.pie.min.js" %}"></script>
+  	<script src="{% static "deck/assets/js/plugins/stat/flot/jquery.flot.tooltip.min.js" %}"></script>
+  	<script src="{% static "deck/assets/js/plugins/jquery-sparkline/jquery.sparkline.min.js" %}"></script>
+  	<script src="{% static "deck/assets/js/plugins/datatable/jquery.dataTables.min.js" %}"></script>
+  	<script src="{% static "deck/assets/js/plugins/datatable/dataTables.bootstrap.js" %}"></script>
+  	<script src="{% static "deck/assets/js/plugins/jquery-mapael/jquery.mapael.js" %}"></script>
+  	<script src="{% static "deck/assets/js/plugins/raphael/maps/usa_states.js" %}"></script>
+  	<script src"{% static "deck/assets/js/king-chart-stat.js" %}"></script>
+    <script src="{% static "deck/assets/js/king-table.js" %}"></script>
+  	<script src="{% static "deck/assets/js/king-components.js" %}"></script>
+
+</body>
+</html>

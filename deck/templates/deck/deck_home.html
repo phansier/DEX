@@ -1,0 +1,294 @@
+{% extends "deck/deck_header.html" %}
+{% block content %}
+<div id="left-sidebar" class="left-sidebar">
+  <!-- main-nav -->
+  <div class="sidebar-scroll">
+    <nav class="main-nav">
+      <ul class="main-menu">
+        <li><a href="#" class="js-sub-menu-toggle"><i class="fa fa-dashboard fa-fw"></i><span class="text">Dashboard</span>
+          <i class="toggle-icon fa fa-angle-down"></i></a>
+          <ul class="sub-menu ">
+            <table class="table">
+              <tbody>
+                <tr><td>Variation in Margin:</td><td>+ 3600</td></tr>
+                <tr><td>Current Net Positions:</td><td> 21 000</td></tr>
+                <tr><td>Planned Net Positions:</td><td> 13 000</td></tr>
+              </tbody>
+            </table>
+          </ul>
+        </li>
+        <li class="active"><a href="#" class="js-sub-menu-toggle"><i class="fa fa-navicon"></i><span class="text">Recent Symbols</span>
+          <i class="toggle-icon fa fa-angle-left"></i></a>
+          <ul class="sub-menu open">
+            <table class="table">
+              <thead>
+                <tr><th>Symbol</th><th>Last</th><th>Change</th></tr>
+              </thead>
+              <tbody>
+                {% regroup data by ASSETCODE as data_list %}
+                {% for future in data_list %}
+                <tr>
+                  <!-- <td><a href="/deck/{{underlying.id}}">{{ future.name }}</a></td> -->
+                  <td onclick=draw_chart('{{future.grouper}}') data-toggle='collapse' data-target=#{{future.grouper}}>
+                    {{ future.grouper }}
+                  </td>
+                  <!-- <td>{{ future.8 }}</td>
+                  <td>{{ future.11 }}</td> -->
+                </tr>
+                <tr  id={{ future.grouper }} class='collapse out'>
+                  {% for p in future.list %}
+                  <td>{{p.SECID}}</td>
+                  {% endfor %}
+                </tr>
+                {% endfor %}
+
+              </tbody>
+            </table>
+          </ul>
+        </li>
+
+
+
+      </ul>
+    </nav>
+    <!-- /main-nav -->
+  </div>
+</div>
+<!-- END LEFT SIDEBAR -->
+<!-- MAIN CONTENT WRAPPER -->
+<div id="main-content-wrapper" class="content-wrapper ">
+  <!-- top general alert -->
+  <div class="alert alert-danger top-general-alert">
+    <span>If you <strong>can't see the logo</strong> on the top left, please reset the style on right style switcher (for upgraded theme only).</span>
+    <button type="button" class="close">&times;</button>
+  </div>
+  <!-- end top general alert -->
+  <!-- <div class="row">
+    <div class="col-md-4 ">
+
+    </div>
+    <div class="col-md-8 ">
+      <div class="top-content">
+        <ul class="list-inline mini-stat">
+          <li>
+            <h5>RTS-9.17 <span class="stat-value stat-color-orange"><i class="fa fa-plus-circle"></i> 96,040</span></h5>
+            <span id="mini-bar-chart1" class="mini-bar-chart"></span>
+          </li>
+          <li>
+            <h5>Si-12.17 <span class="stat-value stat-color-blue"><i class="fa fa-plus-circle"></i> 61,340</span></h5>
+            <span id="mini-bar-chart2" class="mini-bar-chart"></span>
+          </li>
+          <li>
+            <h5>RVI-9.17 <span class="stat-value stat-color-seagreen"><i class="fa fa-plus-circle"></i> 23,748</span></h5>
+            <span id="mini-bar-chart3" class="mini-bar-chart"></span>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div> -->
+  <!-- main -->
+  {% regroup ops by future as opsa_list %}
+  <div class="content">
+
+    <div class="main-content">
+
+      <div class="panel-group">
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <div class='row'>
+                <div class='col-md-10'>
+                  <h4 class="panel-title">
+                    <a data-toggle="collapse" href="#collapse1">GRAPHLOW</a>
+                  </h4>
+                </div>
+                <div class='col-md-2'>
+                  <!-- <h4 class="panel-title">
+                    <a data-toggle="tab" href="#tab2">Text on Right</a>
+                    <a data-toggle="tab" href="#tab3">Text on Right</a>
+                  </h4> -->
+                  <!-- <div class='chart-nav'>
+                    <ul id="sales-stat-tab">
+                      <li class="active"><a href="#">John</a></li>
+                    </ul>
+                  </div> -->
+                </div>
+              </div>
+            </div>
+            <div id="collapse1" class="panel-collapse collapse">
+              <!-- <ul class="nav nav-tabs">
+                <li class="active"><a data-toggle='tab' href="#wrtc">Home</a></li>
+                <li><a data-toggle='tab' href="#montecarlo">Monte Carlo</a></li>
+                <li><a href="#">Menu 2</a></li>
+                <li><a href="#">Menu 3</a></li>
+              </ul> -->
+              <div id='wrtc' class="tab-pane fade in active" style='height:600px'></div>
+              <!-- <div id='tab2' class="tab-pane fade in active" style='height:600px'>Hi2</div>
+              <div id='tab3' class="tab-pane fade in active" style='height:600px'>Hi3</div> -->
+              <!-- <div id='wrtc' class="panel-body" style='height:600px'></div> -->
+            </div>
+          </div>
+        </div>
+        <!-- END OF GRAPHFLOW -->
+        <div class="panel-group">
+            <div class="panel panel-default">
+              <div class="panel-heading">
+                <div class='row'>
+                  <div class='col-md-10'>
+                    <h4 class="panel-title">
+                      <a data-toggle="collapse" href="#collapse_terms">TERMS</a>
+                    </h4>
+                  </div>
+                  <div class='col-md-2'>
+                  </div>
+                </div>
+              </div>
+              <div id="collapse_terms" class="panel-collapse collapse">
+                <div id='terms' class="tab-pane fade in active" style='height:600px'></div>
+              </div>
+            </div>
+          </div>
+
+
+
+      <!-- <div class="widget real-time-chart">
+
+
+        <div class="widget-header" style={padding:0px}>
+          <h3><i class="fa fa-cogs"></i> CPU Load</h3> <em>- Realtime chart</em>
+          <div class="btn-group widget-header-toolbar">
+            <a href="#" title="Focus" class="btn-borderless btn-focus"><i class="fa fa-eye"></i></a>
+            <a href="#" title="Expand/Collapse" class="btn-borderless btn-toggle-expand"><i class="fa fa-chevron-up"></i></a>
+            <a href="#" title="Remove" class="btn-borderless btn-remove"><i class="fa fa-times"></i></a>
+          </div>
+        </div>
+        <div id="wrtc" style="width:100%" class="widget-content">
+
+
+          HI
+        </div>
+      </div> -->
+
+      <!-- WIDGET TICKET TABLE -->
+
+      <!-- END WIDGET TICKET TABLE -->
+      <!-- WIDGET TICKET TABLE -->
+
+      <!-- END WIDGET TICKET TABLE -->
+
+      <!-- WIDGET MAIN CHART WITH TABBED CONTENT -->
+
+      <!-- END WIDGET MAIN CHART WITH TABBED CONTENT -->
+
+    </div>
+  </div>
+  <!-- /main -->
+  <!-- FOOTER -->
+  <!-- <footer class="footer">
+    &copy; MOSKVANT
+  </footer> -->
+  <!-- END FOOTER -->
+</div>
+<script>
+  function draw_chart(ticker) {
+
+
+
+  var url2 = 'http://iss.moex.com/iss/engines/futures/markets/forts/securities/'+ticker+'/candles.json?from=2010-08-08&till=2017-06-21&interval=24&start=0&iss.meta=off'
+  $.getJSON(url2, function (data) {
+
+  // split the data set into ohlc and volume
+  var ohlc = [],
+      volume = [],
+      data = data.candles.data
+      dataLength = data.length,
+      // set the allowed units for data grouping
+      // groupingUnits = [[
+      //     'week',                         // unit name
+      //     [1]                             // allowed multiples
+      // ], [
+      //     'month',
+      //     [1, 2, 3, 4, 6]
+      // ]],
+
+      i = 0;
+
+  for (i; i < dataLength; i += 1) {
+      ohlc.push([
+          Date.parse(data[i][6]), // the date
+          data[i][0], // open
+          data[i][2], // high
+          data[i][3], // low
+          data[i][1] // close
+      ]);
+
+      volume.push([
+          Date.parse(data[i][6]), // the date
+          data[i][5] // the volume
+      ]);
+  }
+
+
+  // create the chart
+  Highcharts.stockChart('wrtc', {
+
+      rangeSelector: {
+          selected: 1
+      },
+
+      title: {
+          text: ticker
+      },
+
+      yAxis: [{
+          labels: {
+              align: 'right',
+              x: -3
+          },
+          title: {
+              text: 'OHLC'
+          },
+          height: '60%',
+          lineWidth: 2
+      }, {
+          labels: {
+              align: 'right',
+              x: -3
+          },
+          title: {
+              text: 'Volume'
+          },
+          top: '65%',
+          height: '35%',
+          offset: 0,
+          lineWidth: 2
+      }],
+
+      tooltip: {
+          split: true
+      },
+
+      series: [{
+          type: 'candlestick',
+          name: 'AAPL',
+          data: ohlc,
+          dataGrouping: {
+              // units: groupingUnits
+          }
+      }, {
+          type: 'column',
+          name: 'Volume',
+          data: volume,
+          yAxis: 1,
+          dataGrouping: {
+              // units: groupingUnits
+          }
+      }]
+  });
+})
+};
+
+  $('reflow-chart').click(function () {
+    chart.reflow();
+});
+  </script>
+{% endblock %}
