@@ -9,8 +9,8 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-	<meta name="description" content="KingAdmin - Bootstrap Admin Dashboard Theme">
-	<meta name="author" content="The Develovers">
+	<!-- <meta name="description" content="KingAdmin - Bootstrap Admin Dashboard Theme"> -->
+	<!-- <meta name="author" content="The Develovers"> -->
 	<!-- CSS -->
   {% load staticfiles %}
 	<link href="{% static "deck/assets/css/bootstrap.min.css" %}" rel="stylesheet" type="text/css">
@@ -97,7 +97,8 @@
   <script src="https://code.highcharts.com/stock/highstock.js"></script>
   <!-- <script src="http://code.highcharts.com/highcharts.js"></script> -->
   <script src="https://code.highcharts.com/stock/modules/exporting.js"></script>
-  <script src="http://0.0.0.0:8000/static/deck/js/themes/dark-unica.js"></script>
+  <script src="{% static "deck/js/themes/dark-unica.js" %}"></script>
+	<link href="{% static "deck/assets/css/skins/transparent.css" %}" rel="stylesheet" type="text/css">
   <!-- <script>
   function draw_chart(ticker) {
 
