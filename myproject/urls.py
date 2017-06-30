@@ -16,9 +16,13 @@ Including another URLconf
 from django.conf.urls import url,include
 from django.contrib import admin
 
+
+
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^$', include('landing.urls')),
+    url(r'^about/', include('landing.urls')),
     url(r'^deck/',include('deck.urls')),
+    url(r'^IVdeck/',include('IVdeck.urls')),
     url(r'^accounts/',include('django.contrib.auth.urls')),
 ]
