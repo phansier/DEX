@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>DEX</title>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+<script
+  src="http://code.jquery.com/jquery-3.2.1.js"
+  integrity="sha256-DZAnKJ/6XZ9si04Hgrsxu/8s717jcIzLy3oi35EouyE="
+  crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<style>
+body {
+    font-size: 0.75rem;
+}
+div {
+    border: 1px solid black;
+}
+#vhbox {
+    height: 100vh;
+}
+#mid_pane {
+    background-color:rgb(34,34,34);
+    color:grey;
+    display: block;
+    overflow-y: scroll;
+    min-width: 750px;
+    padding-bottom: 250px;
+}
+.mid_pane_table {
+    width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+}
+#orders {
+    position: fixed;
+    height: 250px;
+    bottom: 0;
+    background-color:black;
+    z-index: 1;
+}
+td {
+    min-width: 20px;
+}
+.volatility {
+    padding-left: 5px;
+    padding-right: 25px;
+    border-right: 1px solid;
+}
+.strike {
+    padding-right: 0px;
+    padding-left: 25px;
+    color: lightgray;
+    border-left: 1px solid grey;
+}
+.expiration_head {
+    background-color: skyblue;
+    opacity: 0.8;
+    color: rgb(34,34,34);
+    border: 2px solid grey;
+}
+.chain_head {
+    background-color: aliceblue;
+    opacity: 0.8;
+    color: rgb(34,34,34);
+}
+.strike_headcol {
+    text-align:right;
+}
+.greek_headcol {
+    color: skyblue;
+</style>
+</head>
+<body>
+<div class="container-fluid">
+  <div id="vhbox" class="row">
+    <div class="col-2" id="left_col">
+<table>      
+<thead>
+	<tr>
+	<th>Sec</th>
+	<th>Bid</th>
+<th>Ask</th>
+<th>Last</th>
+</tr>
+</thead>
+<tbody>
+<tr id='RIZ7'>
+<td>RTS-12.17</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr id='SiZ7'>
+<td>Si-12.17</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+    </div>
+    <div id="mid_pane" class="col">
+      <div id="mid_pane_header"> Options Town</div>
+<div id="orders"></div>
+    </div>
+    <div class="col">
+      3 of 3
+    </div>
+  </div>
+</div>
+
+
+ <div id="phone-calls">
+</div>
+<script src="https://d3js.org/d3.v4.min.js"></script>
+ <script src="https://cdn.socket.io/socket.io-1.3.5.js"></script>
+<script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+<script type="text/javascript" src="/static/dex/options_worker.js"></script>
+<script>
+function dont_miss_the_strike(price) {
+window.rip = price
+}
+function locate_the_options(message) {
+//console.log(message)
+located_message = message
+}
+var sofar = []
+window.mona = {{mona|safe}};
+//var socket = io.connect({transports: ['websocket']});
+var socket = io.connect("http://139.59.208.173:3000/",{transports: ['websocket']});
+socket.on('fixa', function(msg){
+window.msg = msg
+
+
+if (msg.payload.split(',')[0] == 'ri_options') {
+	locate_the_options(msg)
+	//sofar.push(msg)
+} else {
+//console.log(msg)
+$('#'+msg.payload.split(',')[2].split(' ')[0].replace(/\./g,''))[0].children[1].innerHTML = msg.payload.split(',')[3]
+$('#'+msg.payload.split(',')[2].split(' ')[0].replace(/\./g,''))[0].children[2].innerHTML = msg.payload.split(',')[4]
+$('#'+msg.payload.split(',')[2].split(' ')[0].replace(/\./g,''))[0].children[3].innerHTML = msg.payload.split(',')[5]
+dont_miss_the_strike(msg.payload.split(',')[5])
+//window.msg = msg
+}
+    });
+</script>
+<script type="text/javascript" src="/static/dex/options_math.js"></script>
+<script type="text/javascript" src="/static/dex/worker.js"></script>
+
+</body>
+</html>
+
