@@ -20,13 +20,15 @@ div {
 }
 #vhbox {
     height: 100vh;
+    background-color: black;
+    color: white;
 }
 #mid_pane {
     background-color:rgb(34,34,34);
     color:grey;
     display: block;
     overflow-y: scroll;
-    min-width: 750px;
+    min-width: 950px;
     padding-bottom: 250px;
 }
 .mid_pane_table {
@@ -71,6 +73,8 @@ td {
 }
 .greek_headcol {
     color: skyblue;
+    text-align: center;
+}
 </style>
 </head>
 <body>
@@ -129,6 +133,7 @@ located_message = message
 }
 var sofar = []
 window.mona = {{mona|safe}};
+window.margins = {{margins|safe}};
 //var socket = io.connect({transports: ['websocket']});
 var socket = io.connect("http://139.59.208.173:3000/",{transports: ['websocket']});
 socket.on('fixa', function(msg){

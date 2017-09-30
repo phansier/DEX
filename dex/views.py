@@ -14,15 +14,20 @@ import redis
  
 import pandas as pd
 from sqlalchemy import create_engine
-engine2 = create_engine('postgres://quikuser:JbT061409@0.0.0.0:5432/quik')
-connection2 = engine2.connect()
+#engine2 = create_engine('postgres://quikuser:JbT061409@0.0.0.0:5432/quik')
+#connection2 = engine2.connect()
 #df = pd.read_sql('SELECT * FROM ri_options',connection2)
 #mona = df.set_index('id').head().to_json()
 
 @login_required
 def home(request):
+    engine2 = create_engine('postgres://quikuser:JbT061409@0.0.0.0:5432/quik')
+    connection2 = engine2.connect()
     df = pd.read_sql('SELECT * FROM ri_options',connection2)
+    df2 = pd.read_sql('SELECT * FROM ri_options_fixed',connection2)
     mona = df.set_index('id').T.to_json()
+    df2['id'] = df2['id'].str.split().str[0]
+    margins = df2.set_index('id').T.to_json()
     return render(request, 'dex/index2.html', locals())
  
 @csrf_exempt

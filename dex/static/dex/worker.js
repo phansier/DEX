@@ -1,14 +1,18 @@
-var colas = ['Th','D','G','V','OP','NUM_T','LAST','BID','ASK','THEO']
-var putas = ['THEO','BID','ASK','LAST','NUM_T','OP','V','G','D','Th']
+var colas = ['Th','𝚫','Γ','Θ','V','OP','NUM_T','LAST','BID','ASK','THEO']
+var putas = ['THEO','BID','ASK','LAST','NUM_T','OP','V','Θ','Γ','𝚫','Th']
 var stockprice = 112530
 var r_rate = 0.005
+
+
+
+
 
 window.hero = 'hero'
 var columns
 function append_headers(table) {
 	var thead = table.append('thead').attr('class','chain_head')
 	for (var i in colas){
-		if (i < 4) {
+		if (i < 5) {
 			thead.append('th').attr('class','greek_headcol').attr('onclick','hideGreek(this)').text(colas[i])
 		} else {
 			thead.append('th').text(colas[i])
@@ -69,6 +73,8 @@ for (var i in s1) {
 	stk_row.append('td').attr('id',sec_id+'_delta').attr('class','delta_col').attr('value',delta).text(delta.toFixed(2))
 	var gamma = BSM_gamma(stockprice, sec.strike, 0, sec.time_to_maturity/252, r_rate,vol)
 	stk_row.append('td').attr('id',sec_id+'_gamma').attr('class','gamma_col').attr('value',gamma)
+	var theta = BSM_theta(stockprice, sec.strike, 0, sec.time_to_maturity/252, r_rate,vol)
+	stk_row.append('td').attr('id',sec_id+'_theta').attr('class','theta_col').attr('value',theta)
 	var vega = BSM_vega(stockprice, sec.strike, 0, sec.time_to_maturity/252, r_rate,vol)
 	var vega =  Math.ceil(vega / 10) * 10
 	stk_row.append('td').attr('id',sec_id+'_vega').attr('class','vega_col').attr('value',vega)
@@ -94,6 +100,8 @@ for (var i in s1) {
 	var vega = BSM_vega(stockprice, sec.strike, 0, sec.time_to_maturity/252, r_rate,vol)
 	var vega =  Math.ceil(vega / 10) * 10
 	stk_row.append('td').attr('id',sec_id+'_vega').attr('class','vega_col').attr('value',vega)
+	var theta = BSM_theta(stockprice, sec.strike, 0, sec.time_to_maturity/252, r_rate,vol)
+        stk_row.append('td').attr('id',sec_id+'_theta').attr('class','theta_col').attr('value',theta)
 	var gamma = BSM_gamma(stockprice, sec.strike, 0, sec.time_to_maturity/252, r_rate,vol)
 	stk_row.append('td').attr('id',sec_id+'_gamma').attr('class','gamma_col').attr('value',gamma)
         var delta = BSM_delta2("Put",stockprice,sec.strike,0,sec.time_to_maturity/252,r_rate,sec.volatility/100)
@@ -167,6 +175,9 @@ function clicker(aro,aro2) {
 	connectToTable(aro,aro2)
 }
 // this is to remove an order, its connected to above function
+
+
+
 function remove_order(circle,from_where) {
 	if (from_where == 'svg') {
 		var order = circle[0].parentElement
@@ -177,9 +188,18 @@ function remove_order(circle,from_where) {
 		d3.select('#'+order.id.slice(0,-6)).remove()
 		d3.select('#'+order.id).remove() 
 	}
+	d3.select('#'+order.id.split('_')[0]+'_margins').remove()
+	d3.select('#'+order.id.split('_')[0]+'_greeks').remove()
 
 }
+
+
+
+
 // This function adds contract to table, its used in above function
+
+
+
 function connectToTable(aro,otype) {
 	var row = order_tbody.append('tr').attr('id',aro.id.split('_')[0]+'_order_table')
 	var ttm = aro.parentElement.parentElement.previousElementSibling.previousElementSibling.textContent.split(' ')[0]
@@ -207,10 +227,31 @@ function connectToTable(aro,otype) {
 	row.append('td').text(otype)
 	row.append('td').text(Number(aro.textContent))
 	row.append('td').attr('onclick','remove_order(this)').attr('style','color:red').text('X')
-	
-	
-}
 
+	var code = aro.id.split('_')[0]
+	var tots = d3.select('#order_margins_table').select('tbody').append('tr').attr('id',code+'_margins')
+	tots.append('td').text(code)
+	var bgop = tots.append('td').attr('id',code+'_bgop').text(margins[code]["bgop"])
+	var bgonp = tots.append('td').attr('id',code+'_bgonp').text(margins[code]["bgonp"])
+	var buydepo = tots.append('td').attr('id',code+'_buydepo').text(margins[code]["buydepo"])
+	if (side == 'Buy') {
+		buydepo.attr('style','color:rgb(0,255,0)')
+	} else {
+		bgop.attr('style','color:rgb(0,255,0)')
+	}
+
+	gkt = d3.select('#order_totals_table').select('tbody')
+	gtkrow = gkt.append('tr').attr('id',code+'_greeks')
+	delt = d3.select('#'+code+'_delta')["_groups"][0][0].attributes.value.value
+	gtkrow.append('td').text(Number(delt).toFixed(2))
+	gamm = d3.select('#'+code+'_gamma')["_groups"][0][0].attributes.value.value
+	gtkrow.append('td').text(Number(gamm).toFixed(2))
+	thet = d3.select('#'+code+'_theta')["_groups"][0][0].attributes.value.value
+	gtkrow.append('td').text(Number(thet).toFixed(0))
+	veg = d3.select('#'+code+'_vega')["_groups"][0][0].attributes.value.value
+	gtkrow.append('td').text(Number(veg).toFixed(0))
+
+}
 
 
 
@@ -482,21 +523,39 @@ function order_table(){
 
 order_table()
 // THIS ADDS THE TOTALS BODY
+order_margins = order_section_row.append('div').attr('class','col').attr('id','order_margins')
+var msum = order_margins.append('table').attr('id','margins_sum').append('thead')
+msum.append('th').text('Net Debit / Credit')
+msum.append('th').attr('id','dc_sum')
+msum.append('th').text('Margin Req.')
+msum.append('th').attr('id','mr_sum')
+order_margins.append('table').attr('id','order_margins_table')
+var thead = d3.select('#order_margins_table').append('thead')
+thead.append('th')
+thead.append('th').text('Cov.Marg')
+thead.append('th').text('Uncov.Marg')
+thead.append('th').text('Buy.Coll')
+var tbody = d3.select('#order_margins_table').append('tbody')
+//tbody.append('td').text('Strategy')
+//tbody.append('td').attr('id','total_buydepo')
+//tbody.append('td').attr('id','total_bgop')
+//tbody.append('td').attr('id','total_bgonp')
+
 order_totals = order_section_row.append('div').attr('class','col').attr('id','order_totals')
+
+var gsum = order_totals.append('table').attr('id','greeks_sum').append('thead')
+gsum.append('th').attr('id','delta_sum')
+gsum.append('th').attr('id','gamma_sum')
+gsum.append('th').attr('id','theta_sum')
+gsum.append('th').attr('id','vega_sum')
+
 order_totals.append('table').attr('id','order_totals_table')
 var thead = d3.select('#order_totals_table').append('thead')
-thead.append('th')
 thead.append('th').text('DELTA')
 thead.append('th').text('GAMMA')
 thead.append('th').text('THETA')
 thead.append('th').text('VEGA')
 var tbody = d3.select('#order_totals_table').append('tbody')
-tbody.append('td').text('Strategy')
-tbody.append('td').attr('id','total_delta')
-tbody.append('td').attr('id','total_delta')
-tbody.append('td').attr('id','total_delta')
-tbody.append('td').attr('id','total_delta')
-
 
 
 
