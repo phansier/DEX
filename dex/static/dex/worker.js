@@ -38,6 +38,7 @@ s1 = d3.nest()
   .key(function(d) { return d.value.time_to_maturity; })
   .entries(mena)
 s1 = s1.sort(function(a,b){return a.key - b.key})
+s1 = s1.filter(function(d){if (d.key > 0){return d}})
 bomba = d3.select('#mid_pane')
 table = bomba.append('table').attr('class','mid_pane_table')
 for (var i in s1) {
@@ -178,6 +179,8 @@ function clicker(aro,aro2) {
 
 
 
+
+
 function remove_order(circle,from_where) {
 	if (from_where == 'svg') {
 		var order = circle[0].parentElement
@@ -190,22 +193,118 @@ function remove_order(circle,from_where) {
 	}
 	d3.select('#'+order.id.split('_')[0]+'_margins').remove()
 	d3.select('#'+order.id.split('_')[0]+'_greeks').remove()
+	calculateTotals()
+}
 
+//CALCULATE TOTALS
+
+
+function calculateTotals() {
+	var tb = d3.select('#order_margins_table').select('tbody')
+	var tb2 = d3.select('#order_tbody')
+	var sum = 0
+	for (var i = 0; i < tb["_groups"][0][0].children.length; i++) {
+		p = Number(tb["_groups"][0][0].children[i].attributes.value.value)
+		q = Number(d3.select(tb2["_groups"][0][0].children[i]).select('.qty_input')["_groups"][0][0].value)
+		sum = sum + (p * q)
+		console.log(sum+'_'+q+'_'+'calked')
+	}
+	// var qty = Number(d3.select(tb["_groups"][0][0].children[i]).select('.qty_input')["_groups"][0][0].value)
+	// console.log(sum+'_'+qty+'_'+'calked')
+	// sum = sum * qty
+	d3.select('#mr_sum').text(sum.toFixed(0))
+
+
+
+	
+	var sum = 0
+	for (var i = 0; i < tb2["_groups"][0][0].children.length; i++) {
+		p = Number(tb2["_groups"][0][0].children[i].attributes.value.value)
+		q = Number(d3.select(tb2["_groups"][0][0].children[i]).select('.qty_input')["_groups"][0][0].value)
+		sum = sum + (p * q)
+		console.log(sum+'_'+q+'_'+'calked')
+		 // qty = Number(tb["_groups"][0][0].children[i].children[5].innerText)
+	}
+	// console.log(sum)
+
+	
+	d3.select('#dc_sum').text(sum.toFixed(0))
+
+	// Now with the greeks
+
+	var tb = d3.select('#order_totals_table').select('tbody')
+	// var sum = 0
+	var de = 0
+	var ga = 0
+	var th = 0
+	var vg = 0
+	for (var i = 0; i < tb["_groups"][0][0].children.length; i++) {
+		 de = de + Number(tb["_groups"][0][0].children[i].children[0].innerText)
+		 ga = ga + Number(tb["_groups"][0][0].children[i].children[1].innerText)
+		 th = th + Number(tb["_groups"][0][0].children[i].children[2].innerText)
+		 vg = vg + Number(tb["_groups"][0][0].children[i].children[3].innerText)
+		 
+	}
+	// console.log(sum)
+	d3.select('#delta_sum').text(de.toFixed(2))
+	d3.select('#gamma_sum').text(ga.toFixed(2))
+	d3.select('#theta_sum').text(th.toFixed(0))
+	d3.select('#vega_sum').text(vg.toFixed(0))
 }
 
 
+// Udpate Totals
+
+
+function updateTotals(garg) {
+	console.log(garg)
+	window.garg = garg
+	window.qty = d3.select(garg)["_groups"][0][0].value
+	qty = Number(qty)
+	var code = garg.id.split('_')[0]
+
+	var bgop = d3.select('#'+code+'_bgop')
+	bgop.text((Number(margins[code]["bgop"]) * qty).toFixed(0))
+	var bgonp = d3.select('#'+code+'_bgonp')
+	bgonp.text((Number(margins[code]["bgonp"]) * qty).toFixed(0))
+	var buydepo = d3.select('#'+code+'_buydepo')
+	buydepo.text((Number(margins[code]["buydepo"]) * qty).toFixed(0))
+
+	delt = d3.select('#'+code+'_delta')["_groups"][0][0].attributes.value.value
+	delt = Number(delt)
+	delt = delt * qty
+	gamm = d3.select('#'+code+'_gamma')["_groups"][0][0].attributes.value.value
+	gamm = gamm * qty
+	gamm = Number(gamm)
+	thet = d3.select('#'+code+'_theta')["_groups"][0][0].attributes.value.value
+	thet = thet * qty
+	thet = Number(thet)
+	veg = d3.select('#'+code+'_vega')["_groups"][0][0].attributes.value.value
+	veg = veg * qty
+	veg = Number(veg)
+
+	gtkrow = d3.select('#'+code+'_greeks').selectAll('td')
+	gtkrow["_groups"][0][0].innerText = Number(delt).toFixed(2)
+	gtkrow["_groups"][0][1].innerText = Number(gamm).toFixed(2)
+	gtkrow["_groups"][0][2].innerText = Number(thet).toFixed(0)
+	gtkrow["_groups"][0][3].innerText = Number(veg).toFixed(0)
+
+	calculateTotals()
+}
 
 
 // This function adds contract to table, its used in above function
 
 
-
 function connectToTable(aro,otype) {
+	var coda = aro.id.split('_')[0]
 	var row = order_tbody.append('tr').attr('id',aro.id.split('_')[0]+'_order_table')
 	var ttm = aro.parentElement.parentElement.previousElementSibling.previousElementSibling.textContent.split(' ')[0]
-	var strike = aro.parentElement.children[6].textContent
+	var strike = aro.parentElement.id.split('_')[2]
 	row.append('td').text(Number(ttm))
 	var side;
+	var dc;
+	var qty = 1
 	
 	if (otype == 'Call') {
 		console.log('call')
@@ -213,32 +312,47 @@ function connectToTable(aro,otype) {
 
 		if (aro.id.split('_')[1] == 'bid') {
 			side = 'Sell'
+			dc = 1
 		} else {
 			if (aro.id.split('_')[1] == 'ask') {
 				side = 'Buy'
+				dc = -1
 			} else {
 				// THEO
 			}
 		}
 	}
-	row.append('td').text(side)
-	row.append('td').text(10)
-	row.append('td').text(Number(strike))
-	row.append('td').text(otype)
-	row.append('td').text(Number(aro.textContent))
+	
+	row.append('td').attr('id',coda+'_order_side').text(side)
+	row.append('input').attr('id',coda+'_order_qty')
+			.attr('class','qty_input')
+			.attr('type','number')
+			.attr('value',qty)
+			.attr('onchange','updateTotals(this)')
+	row.append('td').attr('id',coda+'_order_strike').text(Number(strike))
+	row.append('td').attr('id',coda+'_order_otype').text(otype)
+	row.append('td').attr('id',coda+'_order_price').text(Number(aro.textContent))
 	row.append('td').attr('onclick','remove_order(this)').attr('style','color:red').text('X')
+
+	dc = dc * (qty * Number(aro.textContent))
+	row.attr('value',dc)
+
 
 	var code = aro.id.split('_')[0]
 	var tots = d3.select('#order_margins_table').select('tbody').append('tr').attr('id',code+'_margins')
 	tots.append('td').text(code)
-	var bgop = tots.append('td').attr('id',code+'_bgop').text(margins[code]["bgop"])
-	var bgonp = tots.append('td').attr('id',code+'_bgonp').text(margins[code]["bgonp"])
-	var buydepo = tots.append('td').attr('id',code+'_buydepo').text(margins[code]["buydepo"])
+	var bgop = tots.append('td').attr('id',code+'_bgop').text((Number(margins[code]["bgop"]) * qty).toFixed(0))
+	var bgonp = tots.append('td').attr('id',code+'_bgonp').text((Number(margins[code]["bgonp"]) * qty).toFixed(0))
+	var buydepo = tots.append('td').attr('id',code+'_buydepo').text((Number(margins[code]["buydepo"]) * qty).toFixed(0))
+	var go 
 	if (side == 'Buy') {
 		buydepo.attr('style','color:rgb(0,255,0)')
+		go = margins[code]["buydepo"] * qty
 	} else {
 		bgop.attr('style','color:rgb(0,255,0)')
+		go = margins[code]["bgop"] * qty
 	}
+	tots.attr('value',go)
 
 	gkt = d3.select('#order_totals_table').select('tbody')
 	gtkrow = gkt.append('tr').attr('id',code+'_greeks')
@@ -251,9 +365,9 @@ function connectToTable(aro,otype) {
 	veg = d3.select('#'+code+'_vega')["_groups"][0][0].attributes.value.value
 	gtkrow.append('td').text(Number(veg).toFixed(0))
 
+	calculateTotals()
+
 }
-
-
 
 
 
@@ -508,7 +622,7 @@ function order_table(){
 	window.order_section = d3.select('#orders')
 	order_section.append('h3').attr('id','orders_title').text('Order Entry')
 	order_section_row = order_section.append('div').attr('class','row')
-	var table = order_section_row.append('div').attr('class','col').append('table')
+	var table = order_section_row.append('div').attr('class','col').append('table').attr('id','ot1').attr('style','margin-top:29px')
 	var thead = table.append('thead')
 	var hrow = thead.append('tr')
 	hrow.append('th').text('TTM')
@@ -525,10 +639,10 @@ order_table()
 // THIS ADDS THE TOTALS BODY
 order_margins = order_section_row.append('div').attr('class','col').attr('id','order_margins')
 var msum = order_margins.append('table').attr('id','margins_sum').append('thead')
-msum.append('th').text('Net Debit / Credit')
-msum.append('th').attr('id','dc_sum')
-msum.append('th').text('Margin Req.')
-msum.append('th').attr('id','mr_sum')
+msum.append('th').text('Net D/C')
+msum.append('td').attr('id','dc_sum').attr('class','summy').text(0)
+msum.append('th').text('MR')
+msum.append('td').attr('id','mr_sum').attr('class','summy').text(0)
 order_margins.append('table').attr('id','order_margins_table')
 var thead = d3.select('#order_margins_table').append('thead')
 thead.append('th')
@@ -544,10 +658,10 @@ var tbody = d3.select('#order_margins_table').append('tbody')
 order_totals = order_section_row.append('div').attr('class','col').attr('id','order_totals')
 
 var gsum = order_totals.append('table').attr('id','greeks_sum').append('thead')
-gsum.append('th').attr('id','delta_sum')
-gsum.append('th').attr('id','gamma_sum')
-gsum.append('th').attr('id','theta_sum')
-gsum.append('th').attr('id','vega_sum')
+gsum.append('td').attr('id','delta_sum').attr('class','summy_sm')
+gsum.append('td').attr('id','gamma_sum').attr('class','summy_sm')
+gsum.append('td').attr('id','theta_sum').attr('class','summy_sm')
+gsum.append('td').attr('id','vega_sum').attr('class','summy_sm')
 
 order_totals.append('table').attr('id','order_totals_table')
 var thead = d3.select('#order_totals_table').append('thead')
