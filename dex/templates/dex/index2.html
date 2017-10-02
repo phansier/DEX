@@ -31,6 +31,9 @@ div {
     min-width: 950px;
     padding-bottom: 250px;
 }
+#mid_pane_header {
+    height:100px;
+}
 .mid_pane_table {
     width: 400px;
     margin-left: auto;
@@ -39,6 +42,7 @@ div {
 #orders {
     position: fixed;
     height: 250px;
+    width: 71%;
     bottom: 0;
     background-color:black;
     z-index: 1;
@@ -81,6 +85,19 @@ td {
 #greeks_sum {
     width:100%;
 }
+#order_totals_table {
+    width:100%;
+}
+#order_margins_table {
+    width:100%;
+}
+#option_parms_form {
+    margin-top:60px;
+}
+.option_parms {
+    font-size: .65rem;
+    font-weight: lighter;
+}
 .summy_sm {
     font-size:larger;
     color:white;
@@ -95,7 +112,18 @@ td {
     color: inherit;
     width: 50px;
     border: inherit;
+    text-align:right;
 }
+.parms_input {
+    background: inherit;
+    color: white;
+    width: 50px;
+    border: inherit;
+}
+.juk {
+    padding:2px;
+}
+
 </style>
 </head>
 <body>
@@ -128,7 +156,7 @@ td {
 </table>
     </div>
     <div id="mid_pane" class="col">
-      <div id="mid_pane_header"> Options Town</div>
+      <form id="mid_pane_header" onsubmit="preacher(this)"> Options Town</form>
 <div id="orders"></div>
     </div>
     <div class="col">

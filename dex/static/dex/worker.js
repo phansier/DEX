@@ -1,6 +1,6 @@
 var colas = ['Th','𝚫','Γ','Θ','V','OP','NUM_T','LAST','BID','ASK','THEO']
 var putas = ['THEO','BID','ASK','LAST','NUM_T','OP','V','Θ','Γ','𝚫','Th']
-var stockprice = 112530
+var stockprice = 113380
 var r_rate = 0.005
 
 
@@ -40,7 +40,7 @@ s1 = d3.nest()
 s1 = s1.sort(function(a,b){return a.key - b.key})
 s1 = s1.filter(function(d){if (d.key > 0){return d}})
 bomba = d3.select('#mid_pane')
-table = bomba.append('table').attr('class','mid_pane_table')
+table = bomba.append('table').attr('class','mid_pane_table').attr('id','mid_pane_table')
 for (var i in s1) {
 //	table = bomba.append('table').attr('class','mid_pane_table')
 	var exp_head = table.append('thead').attr('class','expiration_head')
@@ -52,7 +52,7 @@ for (var i in s1) {
 	exp_row.append('td').attr('class','strike_selector_col').text(30)
 	exp_row.append('td').attr('class','strike_selector_col').text('All')
 //	append_headers(table)
-	tbody = table.append('tbody')
+	tbody = table.append('tbody').attr('value',s1[i].key)
 	s1_0 = d3.nest().key(function(d) {return d.value.strike}).entries(s1[i].values).sort(function(a,b){return a.key - b.key})
 	for (var j in s1_0) {
 	stk_row = tbody.append('tr').attr('class','strike_row')
@@ -65,18 +65,19 @@ for (var i in s1) {
 	var sec_id = s1_0_0[pc].values[0].key.split(' ')[0]
 	var call_id = sec_id
 //	stk_row.append('td').attr('id',sec_id).text(sec_id)
-	var vol = 0.17
-	var theo = BlackScholes("CALL",stockprice,sec.strike,sec.time_to_maturity/252,r_rate,vol) 
+	var vol = sec.volatility/100
+	var oy = 365
+	var theo = BlackScholes("CALL",stockprice,sec.strike,sec.time_to_maturity/oy,r_rate,vol)
 	theo = Math.ceil(theo / 10) * 10
 	stk_row.append('td').attr('id',sec_id+'_theor_price').attr('class','theo_col').attr('value',theo).text()
-	var delta = BSM_delta2("CALL",stockprice,sec.strike,0,sec.time_to_maturity/252,r_rate,vol)
+	var delta = BSM_delta2("CALL",stockprice,sec.strike,0,sec.time_to_maturity/oy,r_rate,vol)
 //	delta = Math.ceil(delta / 10) * 10
 	stk_row.append('td').attr('id',sec_id+'_delta').attr('class','delta_col').attr('value',delta).text(delta.toFixed(2))
-	var gamma = BSM_gamma(stockprice, sec.strike, 0, sec.time_to_maturity/252, r_rate,vol)
+	var gamma = BSM_gamma(stockprice, sec.strike, 0, sec.time_to_maturity/oy, r_rate,vol)
 	stk_row.append('td').attr('id',sec_id+'_gamma').attr('class','gamma_col').attr('value',gamma)
-	var theta = BSM_theta(stockprice, sec.strike, 0, sec.time_to_maturity/252, r_rate,vol)
+	var theta = BSM_theta(stockprice, sec.strike, 0, sec.time_to_maturity/oy, r_rate,vol)
 	stk_row.append('td').attr('id',sec_id+'_theta').attr('class','theta_col').attr('value',theta)
-	var vega = BSM_vega(stockprice, sec.strike, 0, sec.time_to_maturity/252, r_rate,vol)
+	var vega = BSM_vega(stockprice, sec.strike, 0, sec.time_to_maturity/oy, r_rate,vol)
 	var vega =  Math.ceil(vega / 10) * 10
 	stk_row.append('td').attr('id',sec_id+'_vega').attr('class','vega_col').attr('value',vega)
 	stk_row.append('td').attr('id',sec_id+'_open_pos').text(sec.open_pos)
@@ -98,16 +99,16 @@ for (var i in s1) {
 	stk_row.append('td').attr('id',sec_id+'_last').text(sec.last)
 	stk_row.append('td').attr('id',sec_id+'_num_trades').text(sec.num_trades)
 	stk_row.append('td').attr('id',sec_id+'_open_pos').text(sec.open_pos)
-	var vega = BSM_vega(stockprice, sec.strike, 0, sec.time_to_maturity/252, r_rate,vol)
+	var vega = BSM_vega(stockprice, sec.strike, 0, sec.time_to_maturity/oy, r_rate,vol)
 	var vega =  Math.ceil(vega / 10) * 10
 	stk_row.append('td').attr('id',sec_id+'_vega').attr('class','vega_col').attr('value',vega)
-	var theta = BSM_theta(stockprice, sec.strike, 0, sec.time_to_maturity/252, r_rate,vol)
+	var theta = BSM_theta(stockprice, sec.strike, 0, sec.time_to_maturity/oy, r_rate,vol)
         stk_row.append('td').attr('id',sec_id+'_theta').attr('class','theta_col').attr('value',theta)
-	var gamma = BSM_gamma(stockprice, sec.strike, 0, sec.time_to_maturity/252, r_rate,vol)
+	var gamma = BSM_gamma(stockprice, sec.strike, 0, sec.time_to_maturity/oy, r_rate,vol)
 	stk_row.append('td').attr('id',sec_id+'_gamma').attr('class','gamma_col').attr('value',gamma)
-        var delta = BSM_delta2("Put",stockprice,sec.strike,0,sec.time_to_maturity/252,r_rate,sec.volatility/100)
+        var delta = BSM_delta2("Put",stockprice,sec.strike,0,sec.time_to_maturity/oy,r_rate,sec.volatility/100)
 	stk_row.append('td').attr('id',sec_id+'_delta').attr('class','delta_col').attr('value',delta).text(delta.toFixed(2))
-	var theo = BlackScholes("Put",stockprice,sec.strike,sec.time_to_maturity/252,r_rate,sec.volatility/100) 
+	var theo = BlackScholes("Put",stockprice,sec.strike,sec.time_to_maturity/oy,r_rate,sec.volatility/100) 
         theo = Math.ceil(theo / 10) * 10
         stk_row.append('td').attr('id',sec_id+'_theor_price').attr('class','theo_col').attr('value',theo)
 	stk_row.attr('id',call_id+'_'+put_id+'_'+sec.strike)
@@ -307,7 +308,17 @@ function connectToTable(aro,otype) {
 	var qty = 1
 	
 	if (otype == 'Call') {
-		console.log('call')
+		if (aro.id.split('_')[1] == 'bid') {
+			side = 'Sell'
+			dc = 1
+		} else {
+			if (aro.id.split('_')[1] == 'ask') {
+				side = 'Buy'
+				dc = -1
+			} else {
+				// THEO
+			}
+		}
 	} else {
 
 		if (aro.id.split('_')[1] == 'bid') {
@@ -646,9 +657,9 @@ msum.append('td').attr('id','mr_sum').attr('class','summy').text(0)
 order_margins.append('table').attr('id','order_margins_table')
 var thead = d3.select('#order_margins_table').append('thead')
 thead.append('th')
-thead.append('th').text('Cov.Marg')
-thead.append('th').text('Uncov.Marg')
-thead.append('th').text('Buy.Coll')
+thead.append('th').text('CM')
+thead.append('th').text('UM')
+thead.append('th').text('BC')
 var tbody = d3.select('#order_margins_table').append('tbody')
 //tbody.append('td').text('Strategy')
 //tbody.append('td').attr('id','total_buydepo')
@@ -665,12 +676,11 @@ gsum.append('td').attr('id','vega_sum').attr('class','summy_sm')
 
 order_totals.append('table').attr('id','order_totals_table')
 var thead = d3.select('#order_totals_table').append('thead')
-thead.append('th').text('DELTA')
-thead.append('th').text('GAMMA')
-thead.append('th').text('THETA')
-thead.append('th').text('VEGA')
+thead.append('th').text('𝚫')
+thead.append('th').text('Γ')
+thead.append('th').text('Θ')
+thead.append('th').text('V')
 var tbody = d3.select('#order_totals_table').append('tbody')
-
 
 
 
@@ -758,9 +768,173 @@ if (Number(val.innerText) > 0) {
 
 }
 
+// This is to hide the columns, remember that the greek value for each contract
+// is stored in the value attribute of the respective column, so what this function
+// does is alter the innerHTML to nothing or to the value of the col
+
+var hidden_columns = {'vega':true,'gamma':true,'theo':true,'delta':false,'theta':true,}
+
+function hideGreek(argo) {
+	var mup = {'V':'vega','Th':'theo','𝚫':'delta','Γ':'gamma','Θ':'theta'}
+	var wicho = mup[argo.innerHTML]
+	window.wicho = wicho
+	if (hidden_columns[wicho] == true) {
+		var cols = d3.select('body').selectAll('.'+wicho+'_col')["_groups"][0]
+		cols.forEach(function(d) {
+			var val = Number(d.attributes.value.value)
+			if (wicho == 'delta') {val = val.toFixed(2)}
+			if (wicho == 'vega') {val = val.toFixed(0)}
+			if (wicho == 'theo') {val = val.toFixed(0)}
+			if (wicho == 'gamma') {val = val.toFixed(3)}
+			if (wicho == 'theta') {val = val.toFixed(0)}
+			d.innerHTML = val
+		})
+		hidden_columns[wicho] = false
+		// var val = Number(d3.select('body').selectAll('.'+wicho+'_col')["_groups"][0][0].attributes.value.value)
+		// d3.select('body').selectAll('.'+wicho+'_col')["_groups"][0][0].innerHTML = val
+		
+	} else {
+		var cols = d3.select('body').selectAll('.'+wicho+'_col')["_groups"][0]
+		cols.forEach(function(d) {
+			d.innerHTML = ''
+		})
+		hidden_columns[wicho] = true
+	}
+
+}
 
 
 
+// START FROM HERE
+fm = d3.select('#mid_pane_header').append('form').attr('id','option_parms_form').attr('class','btn-group')
+fm.append('label')
+		.attr('class','btn btn-primary btn-sm option_parms')
+		.attr('onclick','preacher(this)')
+		.attr('id','go_button')
+		.text('GO')
+
+fm.append('label')
+		.attr('class','btn btn-primary btn-sm option_parms juk')
+		.text('Short Rate')
+ 	.append('input')
+ 		.attr('type','number')
+ 		.attr('onsubmit','preacher(this)')
+ 		.attr('step',0.001)
+ 		.attr('class','qty_input juki')
+ 		.attr('id','g_r_rate')
+ 		.attr('autocomplete','off')
+ 		.attr('value',.005)
+fm.append('label')
+		.attr('class','btn btn-primary btn-sm option_parms juk')
+		.text('Vol.')
+ 	.append('input')
+ 		.attr('type','number')
+ 		.attr('onsubmit','preacher(this)')
+ 		.attr('step',0.01)
+ 		.attr('class','qty_input juki')
+ 		.attr('id','g_vol')
+ 		.attr('autocomplete','off')
+ 		.attr('value',.2)
 
 
+fm = d3.select('#mid_pane_header').append('form').attr('id','option_parms_form').attr('class','btn-group').attr('data-toggle','buttons')
+// fm.append('input').attr('id','g_r_rate').attr('class','parms_input').attr('type','number').attr('value',r_rate)
+// fm.append('input').attr('id','g_vol').attr('class','parms_input').attr('type','number').attr('value',g_vol)
+
+ 		
+
+fm.append('label')
+		.attr('class','btn btn-primary btn-sm option_parms active')
+		.attr('onclick','volParameterToggle(this)')
+		.text('Choose volatility')
+ 	.append('input')
+ 		.attr('type','radio')
+ 		.attr('name','options')
+ 		.attr('id','option1')
+ 		.attr('autocomplete','off')
+ 		.attr('checked')
+ 		
+// d3.select('#option1')
+fm.append('label')
+		.attr('class','btn btn-primary btn-sm option_parms')
+		.attr('onclick','volParameterToggle(this)')
+		.text('Use volatility from system')
+ 	.append('input')
+ 		.attr('type','radio')
+ 		.attr('name','options')
+ 		.attr('id','option2')
+ 		.attr('autocomplete','off')
+ 		
+
+function volParameterToggle(voli) {
+	window.voli = voli
+	if (voli.children[0].id == 'option2') {
+		d3.select('#g_vol').attr('readonly','readonly').attr('style','color:grey')
+		d3.select('#g_vol')["_groups"][0][0].value = g_volatility
+	} else {
+		d3.select('#g_vol')
+			.attr('readonly',null)
+			.attr('style','color:white')
+		d3.select('#g_vol')["_groups"][0][0].value = g_volatility
+
+	}
+	
+}
+function preacher(abc) {
+	window.abc = abc
+	window.g_volatility = Number(d3.select('#g_vol')["_groups"][0][0].value)
+	window.r_rate = Number(d3.select('#g_r_rate')["_groups"][0][0].value)
+	if (d3.select('#g_vol')["_groups"][0][0].attributes.readonly) {
+		recalculateGreeks()
+		console.log('imhere')
+	} else {
+		recalculateGreeks(g_volatility)
+	}
+}
+
+// END HERE
+//RECALCULATEGREEKS
+function recalculateGreeks(volva) {
+	console.log('rek')
+	rwz = table.selectAll('.strike_row')
+	rwz["_groups"][0].forEach(function(d){
+		var callcode = d.id.split('_')[0]
+		var putcode = d.id.split('_')[1]
+		if (volva) { vol = volva;console.log('volva') } else { vol = Number(d3.select('#'+callcode+'_'+putcode+'_volatility').text())/100}
+		var strike = Number(d.id.split('_')[2])
+		var time_to_maturity = Number(d.parentElement.attributes.value.value)
+		call_theo = BlackScholes("CALL",stockprice,strike,time_to_maturity/oy,r_rate,vol) 
+		put_theo = BlackScholes("Put",stockprice,strike,time_to_maturity/oy,r_rate,vol) 
+		delta = BSM_delta(stockprice, strike, 0, time_to_maturity/oy, r_rate,vol)
+		delta_put = delta - 1
+		gamma = BSM_gamma(stockprice, strike, 0, time_to_maturity/oy, r_rate,vol)
+		theta = BSM_theta(stockprice, strike, 0, time_to_maturity/oy, r_rate,vol)
+		vega =  BSM_vega(stockprice, strike, 0, time_to_maturity/oy, r_rate,vol)
+
+
+		var c1 = d3.select('#'+callcode+'_theor_price').attr('value',call_theo)
+		if (c1.text()) {c1.text(call_theo.toFixed(0))}
+		var c1 = d3.select('#'+callcode+'_delta').attr('value',delta)
+		if (c1.text()) {c1.text(delta.toFixed(2))}
+		var c1 = d3.select('#'+callcode+'_gamma').attr('value',gamma)
+		if (c1.text()) {c1.text(gamma.toFixed(3))}
+		var c1 = d3.select('#'+callcode+'_theta').attr('value',theta)
+		if (c1.text()) {c1.text(theta.toFixed(0))}
+		var c1 = d3.select('#'+callcode+'_vega').attr('value',vega)
+		if (c1.text()) {c1.text(vega.toFixed(0))}
+
+		var c1 = d3.select('#'+putcode+'_theor_price').attr('value',put_theo)
+		if (c1.text()) {c1.text(put_theo.toFixed(0))}
+		var c1 = d3.select('#'+putcode+'_delta').attr('value',delta_put)
+		if (c1.text()) {c1.text(delta_put.toFixed(2))}
+		var c1 = d3.select('#'+putcode+'_gamma').attr('value',gamma)
+		if (c1.text()) {c1.text(gamma.toFixed(3))}
+		var c1 = d3.select('#'+putcode+'_theta').attr('value',theta)
+		if (c1.text()) {c1.text(theta.toFixed(0))}
+		var c1 = d3.select('#'+putcode+'_vega').attr('value',vega)
+		if (c1.text()) {c1.text(vega.toFixed(0))}
+	})
+
+}
+// END OF RECALCULATEGREKES
 console.log('end of worker')
