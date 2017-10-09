@@ -21,6 +21,8 @@ from dex import views as vws
 
 urlpatterns = [
     url(r'^$', vws.home, name='home'),
+    url(r'^dex/ordercomm/',vws.ordercomm,name='ordercomm'),
+    url(r'^dex/formol/',vws.orderadd,name='orderadd'),
     url(r'^node_api/$', vws.node_api, name='node_api'),
 #    url(r'^ajax_mark_as_read/$', views.ajax_mark_as_read, name='ajax_mark_as_read'),
     url(r'^admin/', admin.site.urls),

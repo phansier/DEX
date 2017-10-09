@@ -1,3 +1,5 @@
+var startTimeWorker = new Date();
+console.log('worker is here')
 var colas = ['Th','𝚫','Γ','Θ','V','OP','NUM_T','LAST','BID','ASK','THEO']
 var putas = ['THEO','BID','ASK','LAST','NUM_T','OP','V','Θ','Γ','𝚫','Th']
 var stockprice = 113380
@@ -42,6 +44,9 @@ s1 = s1.filter(function(d){if (d.key > 0){return d}})
 bomba = d3.select('#mid_pane')
 table = bomba.append('table').attr('class','mid_pane_table').attr('id','mid_pane_table')
 for (var i in s1) {
+	if (s1[i].values.length < 10) {
+		console.log('you have a weird expiration at s1 i')
+	} else {
 //	table = bomba.append('table').attr('class','mid_pane_table')
 	var exp_head = table.append('thead').attr('class','expiration_head')
 //	exp_head.append('tr').append('th').attr('colspan','11').text(s1[i].key+' Days to Expiration')
@@ -112,6 +117,7 @@ for (var i in s1) {
         theo = Math.ceil(theo / 10) * 10
         stk_row.append('td').attr('id',sec_id+'_theor_price').attr('class','theo_col').attr('value',theo)
 	stk_row.attr('id',call_id+'_'+put_id+'_'+sec.strike)
+	}
 //	stk_row.append('td').attr('id',sec_id).text(sec_id)
 }
 tbody.append('input').attr('hidden','true').attr('value',25)
@@ -221,6 +227,9 @@ function calculateTotals() {
 	var sum = 0
 	for (var i = 0; i < tb2["_groups"][0][0].children.length; i++) {
 		p = Number(tb2["_groups"][0][0].children[i].attributes.value.value)
+		var cd = tb2["_groups"][0][0].children[i].id.split('_')[0]
+		var pstepval = margins[cd].pstepval
+		p = p * (pstepval) / 10
 		q = Number(d3.select(tb2["_groups"][0][0].children[i]).select('.qty_input')["_groups"][0][0].value)
 		sum = sum + (p * q)
 		console.log(sum+'_'+q+'_'+'calked')
@@ -334,7 +343,7 @@ function connectToTable(aro,otype) {
 		}
 	}
 	
-	row.append('td').attr('id',coda+'_order_side').text(side)
+	row.append('td').attr('id',coda+'_order_side').attr('class','order_side_val').text(side)
 	row.append('input').attr('id',coda+'_order_qty')
 			.attr('class','qty_input')
 			.attr('type','number')
@@ -342,8 +351,8 @@ function connectToTable(aro,otype) {
 			.attr('onchange','updateTotals(this)')
 	row.append('td').attr('id',coda+'_order_strike').text(Number(strike))
 	row.append('td').attr('id',coda+'_order_otype').text(otype)
-	row.append('td').attr('id',coda+'_order_price').text(Number(aro.textContent))
-	row.append('td').attr('onclick','remove_order(this)').attr('style','color:red').text('X')
+	row.append('td').attr('id',coda+'_order_price').attr('class','order_side_price').text(Number(aro.textContent))
+	row.append('td').attr('onclick','remove_order(this)').attr('style','color:red').attr('class','removedor').text('X')
 
 	dc = dc * (qty * Number(aro.textContent))
 	row.attr('value',dc)
@@ -360,8 +369,8 @@ function connectToTable(aro,otype) {
 		buydepo.attr('style','color:rgb(0,255,0)')
 		go = margins[code]["buydepo"] * qty
 	} else {
-		bgop.attr('style','color:rgb(0,255,0)')
-		go = margins[code]["bgop"] * qty
+		bgonp.attr('style','color:rgb(0,255,0)')
+		go = margins[code]["bgonp"] * qty
 	}
 	tots.attr('value',go)
 
@@ -518,9 +527,18 @@ function green_red(a,b) {
 	a.innerHTML = b
 }
 
-
+window.flashactive = true
+var mara = []
+var latest_msg;
 function locate_the_options(message) {
 	var code = message.payload.split(',')[2].split(' ')[0]
+	if ($('#'+code+'_last')[0]) {
+ 		var now = new Date()
+		latest_msg = now
+	} else {
+		mara.push(message)
+		return
+	}
 	if (code.startsWith('RI')) {
 		// $('#'+code+'_bid')[0].innerHTML = message.payload.split(',')[3]
 		green_red($('#'+code+'_bid')[0],message.payload.split(',')[3])
@@ -537,15 +555,15 @@ function locate_the_options(message) {
 			   setTimeout(function () {    //  call a 3s setTimeout when the loop is called
 				d3.select('#'+rowcode).attr('style','background-color:rgba(255,'+o+','+o+','+c+')')
 			             //  your code here
-			      o=o+1;
-			      c = c - 0.004                     //  increment the counter
+			      o=o+10;
+			      c = c - 0.04                     //  increment the counter
 			      if (o < 255) {            //  if the counter < 10, call the loop function
 			         myLoopR();             //  ..  again which will trigger another
 			      }                        //  ..  setTimeout()
 			   }, 1)
 
 			}
-			myLoopR();
+			if (flashactive == true) { myLoopR() }
 
 		} else {
 			if (message.payload.split(',')[5] > $('#'+code+'_last')[0].innerHTML) {
@@ -558,15 +576,15 @@ function locate_the_options(message) {
 				   setTimeout(function () {    //  call a 3s setTimeout when the loop is called
 					d3.select('#'+rowcode).attr('style','background-color:rgba('+o+',255,'+o+','+c+')')
 				             //  your code here
-				      o=o+1;
-				      c = c - 0.004                     //  increment the counter
+				      o=o+10;
+				      c = c - 0.04                     //  increment the counter
 				      if (o < 255) {            //  if the counter < 10, call the loop function
 				         myLoop();             //  ..  again which will trigger another
 				      }                        //  ..  setTimeout()
 				   }, 1)
 				   
 				}
-				myLoop()
+				if (flashactive == true) { myLoop() }
 			} else {
 				if (message.payload.split(',')[6]>$('#'+code+'_num_trades')[0].innerHTML) {
 					console.log('numup')
@@ -578,23 +596,24 @@ function locate_the_options(message) {
 				   setTimeout(function () {    //  call a 3s setTimeout when the loop is called
 					d3.select('#'+rowcode).attr('style','background-color:rgba('+o+','+o+',255,'+c+')')
 				             //  your code here
-				      o=o+1;
-				      c = c - 0.004                     //  increment the counter
+				      o=o+10;
+				      c = c - 0.04                     //  increment the counter
 				      if (o < 255) {            //  if the counter < 10, call the loop function
 				         myLoopB();             //  ..  again which will trigger another
 				      }                        //  ..  setTimeout()
 				   }, 1)
 				   
 				}
-				myLoopB()
+				if (flashactive == true) { myLoopB() }
 				}
 			} 
 		} 
 		$('#'+code+'_num_trades')[0].innerHTML = message.payload.split(',')[6]
 		$('#'+code+'_open_pos')[0].innerHTML = message.payload.split(',')[8]
-		$('#'+code+'_open_pos')[0].parentElement.children[7].innerHTML = Number(message.payload.split(',')[9]).toFixed(2)
+		d3.select($('#'+code+'_last')[0].parentElement).select('.volatility')['_groups'][0][0].innerHTML = Number(message.payload.split(',')[9]).toFixed(2)
+//		$('#'+code+'_open_pos')[0].parentElement.children[7].innerHTML = Number(message.payload.split(',')[9]).toFixed(2)
 		$('#'+code+'_theo')[0].innerHTML = message.payload.split(',')[10]
-		
+		$('#'+code+'_last')[0].innerHTML = message.payload.split(',')[5]
 	}
 }
 
@@ -687,13 +706,15 @@ var tbody = d3.select('#order_totals_table').append('tbody')
 // This is to shrink the orders table
 //
 
+
 function shrinkToggle(smth) {
+	window.smth = smth
 
 
 	function shrinkOn() {
 		setTimeout(function() {
 			d3.select('#'+section).attr('style',width_or_height+':'+o+'px')
-			o = o - 5
+			o = o - iii
 			if (o > 30) {
 				shrinkOn();
 			}
@@ -703,7 +724,7 @@ function shrinkToggle(smth) {
 	function shrinkOff() {
 		setTimeout(function() {
 			d3.select('#'+section).attr('style',width_or_height+':'+o+'px')
-			o = o + 5
+			o = o + iii
 			if (o < sec_height) {
 				shrinkOff();
 			}
@@ -711,22 +732,52 @@ function shrinkToggle(smth) {
 	}
 
 	var ind = smth.attributes.value.value
+	var id = smth.id
+	if (id == 'dashboard') {
+		// console.log(';puiyiy')
+		if (ind == 1) {
+			var o = 350
+			var iii = 10
+			var width_or_height = 'height'
+			var section = 'dashboard'
+			$('#rowy').toggle()
+			shrinkOn()
+			smth.attributes.value.value = 0
+		} else {
+			var o = 30
+			var iii = 10
+			var sec_height = 350
+			var width_or_height = 'height'
+			var section = 'dashboard'
+			shrinkOff()
+			$('#rowy').toggle()
+			smth.attributes.value.value = 1
+		}
+	} 
+	if (id == 'orders_title') {
+		// console.log('nucha')
 
-	if (ind == 1) {
-		var o = 250
-		var width_or_height = 'height'
-		var section = 'orders'
-		shrinkOn()
-		smth.attributes.value.value = 0
-	} else {
-		var o = 0
-		var sec_height = 250
-		var width_or_height = 'height'
-		var section = 'orders'
-		shrinkOff()
-		smth.attributes.value.value = 1
+		if (ind == 1) {
+			var o = 250
+			var iii = 5
+			var width_or_height = 'height'
+			var section = 'orders'
+			shrinkOn()
+			smth.attributes.value.value = 0
+		} else {
+			var o = 0
+			var iii = 5
+			var sec_height = 250
+			var width_or_height = 'height'
+			var section = 'orders'
+			shrinkOff()
+			smth.attributes.value.value = 1
+		}
 	}
+
+	
 }
+
 d3.select('#orders_title').attr('onclick','shrinkToggle(this)').attr('value',1)
 
 
@@ -806,7 +857,9 @@ function hideGreek(argo) {
 
 
 // START FROM HERE
-fm = d3.select('#mid_pane_header').append('form').attr('id','option_parms_form').attr('class','btn-group')
+dashboard = d3.select('#mid_pane_header').append('div').attr('id','dashboard').attr('value',0)
+db = dashboard.append('h3').attr('id','dashboard_activate').attr('onclick','shrinkToggle(this.parentElement)').text('Dashboard')
+fm = d3.select('#mid_pane_header').append('form').attr('id','option_parms_form_1').attr('class','btn-group option_parms_form')
 fm.append('label')
 		.attr('class','btn btn-primary btn-sm option_parms')
 		.attr('onclick','preacher(this)')
@@ -837,7 +890,7 @@ fm.append('label')
  		.attr('value',.2)
 
 
-fm = d3.select('#mid_pane_header').append('form').attr('id','option_parms_form').attr('class','btn-group').attr('data-toggle','buttons')
+fm = d3.select('#mid_pane_header').append('form').attr('id','option_parms_form_2').attr('class','btn-group option_parms_form').attr('data-toggle','buttons')
 // fm.append('input').attr('id','g_r_rate').attr('class','parms_input').attr('type','number').attr('value',r_rate)
 // fm.append('input').attr('id','g_vol').attr('class','parms_input').attr('type','number').attr('value',g_vol)
 
@@ -937,4 +990,16 @@ function recalculateGreeks(volva) {
 
 }
 // END OF RECALCULATEGREKES
+
+// SOME PARAMS OF INTEREST
+stockprice = Number($('#RIZ7').children()[3].innerText)
+d3.select('#mid_pane_header').attr('value',1)
+flashactive = false
+//
+
+var endTime   = new Date();
+var loadgap = (endTime.getTime() - startTime.getTime()) / 1000;
+var loadgapworker = (endTime.getTime() - startTimeWorker.getTime()) / 1000;
 console.log('end of worker')
+console.log('loadpgap :'+loadgap)
+console.log('loadpgap worker :'+loadgapworker)

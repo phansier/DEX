@@ -11,6 +11,11 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+<script src="https://code.highcharts.com/stock/highstock.js"></script>
+<script src="https://code.highcharts.com/stock/modules/exporting.js"></script>
+
+
 <style>
 body {
     font-size: 0.75rem;
@@ -30,9 +35,11 @@ div {
     overflow-y: scroll;
     min-width: 950px;
     padding-bottom: 250px;
+    padding-left: 0px;
 }
 #mid_pane_header {
-    height:100px;
+    width: 96%;
+    margin-right: auto;
 }
 .mid_pane_table {
     width: 400px;
@@ -45,8 +52,18 @@ div {
     width: 71%;
     bottom: 0;
     background-color:black;
-    z-index: 1;
+    z-index: 5;
 }
+#formita {
+    width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 20%;
+}
+#ultimate > table > tr >input {
+    width: 70px;
+}
+
 td {
     min-width: 20px;
 }
@@ -62,10 +79,12 @@ td {
     border-left: 1px solid grey;
 }
 .expiration_head {
-    background-color: skyblue;
-    opacity: 0.8;
-    color: rgb(34,34,34);
-    border: 2px solid grey;
+    background-color: rgb(0,120,203);
+    color: white;
+    border: 1px solid grey;
+}
+th.expiration_head_col {
+    font-weight: 400;
 }
 .chain_head {
     background-color: aliceblue;
@@ -91,8 +110,17 @@ td {
 #order_margins_table {
     width:100%;
 }
-#option_parms_form {
-    margin-top:60px;
+#rowy {
+    margin: 0
+}
+#chartyboy {
+    padding: 0
+}
+#widener {
+    border: 0;
+    min-width: 840px;
+}
+.option_parms_form {
 }
 .option_parms {
     font-size: .65rem;
@@ -123,13 +151,56 @@ td {
 .juk {
     padding:2px;
 }
+div#introscreen {
+    height: 100%;
+    width: 100%;
+    position: fixed;
+    z-index: 10;
+    top: 0;
+    left: 0;
+    background-color: rgb(0,120,203);
+    overflow-x: hidden;
+    transition: 2s;
+}
+div#alertwindow {
+    height: 100%;
+    width: 100%;
+    position: fixed;
+    z-index: 10;
+    top: 0;
+    left: 0;
+    background-color: rgba(0,120,203,0.5);
+    overflow-x: hidden;
+    transition: 0.5s;
+}
+.brut {
+    background-color: rgba(0,0,0,0);
+    transition: 1s;
+}
+.bomb {
+    background-color: rgba(0,255,0,1);
+    transition: 0s;
+}
+.blood {
+    background-color: rgba(255,0,0,1);
+    transition: 0s;
+}
+.cool {
+    background-color: rgba(0,0,255,1);
+    transition: 0s;
+}
 
 </style>
 </head>
 <body>
+<div id="introscreen"></div>
 <div class="container-fluid">
   <div id="vhbox" class="row">
     <div class="col-2" id="left_col">
+<div id='menubar'></div>
+<form id="add_trade_account" action="" method="post">
+{% csrf_token %}
+</form>
 <table>      
 <thead>
 	<tr>
@@ -154,9 +225,14 @@ td {
 </tr>
 </tbody>
 </table>
-    </div>
+<div id='alertwindow'>
+<form id='formita' action="" method="post">
+{% csrf_token %}
+</form>
+</div>
+</div>
     <div id="mid_pane" class="col">
-      <form id="mid_pane_header" onsubmit="preacher(this)"> Options Town</form>
+      <form id="mid_pane_header" onsubmit="preacher(this)"></form>
 <div id="orders"></div>
     </div>
     <div class="col">
@@ -181,8 +257,15 @@ function locate_the_options(message) {
 located_message = message
 }
 var sofar = []
+window.account = {{account|safe}}
 window.mona = {{mona|safe}};
 window.margins = {{margins|safe}};
+window.snap1 = {{snap1|safe}};
+window.snap2 = {{snap2|safe}};
+window.rts_min = {{rts_min|safe}};
+window.rvi_min = {{rvi_min|safe}};
+window.cuser = "{{cuser}}";
+var stockprice;
 //var socket = io.connect({transports: ['websocket']});
 var socket = io.connect("http://139.59.208.173:3000/",{transports: ['websocket']});
 socket.on('fixa', function(msg){
@@ -193,18 +276,37 @@ if (msg.payload.split(',')[0] == 'ri_options') {
 	locate_the_options(msg)
 	//sofar.push(msg)
 } else {
+
+if (msg.payload.split(',')[0] == 'ri_snap_mirror') {
+console.log('mirroring')
+window.mirror = msg
+} else {
+if (msg.payload.split(',')[0] == 'bal') {
 //console.log(msg)
 $('#'+msg.payload.split(',')[2].split(' ')[0].replace(/\./g,''))[0].children[1].innerHTML = msg.payload.split(',')[3]
 $('#'+msg.payload.split(',')[2].split(' ')[0].replace(/\./g,''))[0].children[2].innerHTML = msg.payload.split(',')[4]
 $('#'+msg.payload.split(',')[2].split(' ')[0].replace(/\./g,''))[0].children[3].innerHTML = msg.payload.split(',')[5]
+
+if (msg.payload.split(',')[2].split(' ')[0].replace(/\./g,'') == 'RIZ7') {
+	stockprice = Number(msg.payload.split(',')[5])
+}
+
 dont_miss_the_strike(msg.payload.split(',')[5])
 //window.msg = msg
+}
+else {
+console.log('wtf?')
+}
+}
+
 }
     });
 </script>
 <script type="text/javascript" src="/static/dex/options_math.js"></script>
 <script type="text/javascript" src="/static/dex/worker.js"></script>
-
+<script type="text/javascript" src="/static/dex/worker_page2.js"></script>
+<script type="text/javascript" src="/static/dex/worker_hc.js"></script>
+<script type="text/javascript" src="/static/dex/worker_order.js"></script>
 </body>
 </html>
 

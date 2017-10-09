@@ -80,7 +80,7 @@ for i in range(len(ttms)):
 
 crs = {moscow_time:curs}
 new_df = pd.DataFrame.from_dict(crs,orient='index')
-
+new_df.to_sql('ri_snap_mirror',engine,if_exists='append')
 
 
 
