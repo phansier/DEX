@@ -34,7 +34,7 @@ function append_headers(table) {
 
 
 mena = d3.entries(mona)
-mena = mena.filter(function(d){if(d.key.startsWith('RI')) {return d}})
+mena = mena.filter(function(d){if(d.key.startsWith('Si')) {return d}})
 window.nastya = 'blye'
 s1 = d3.nest()
   .key(function(d) { return d.value.time_to_maturity; })
@@ -43,6 +43,10 @@ s1 = s1.sort(function(a,b){return a.key - b.key})
 s1 = s1.filter(function(d){if (d.key > 0){return d}})
 bomba = d3.select('#mid_pane')
 table = bomba.append('table').attr('class','mid_pane_table').attr('id','mid_pane_table')
+pstepval = 11.58196
+global_margin = 0.3
+price_step = 10
+price_step_price = pstepval
 for (var i in s1) {
 	if (s1[i].values.length < 10) {
 		console.log('you have a weird expiration at s1 i')
@@ -79,11 +83,14 @@ for (var i in s1) {
 //	delta = Math.ceil(delta / 10) * 10
 	stk_row.append('td').attr('id',sec_id+'_delta').attr('class','delta_col').attr('value',delta).text(delta.toFixed(2))
 	var gamma = BSM_gamma(stockprice, sec.strike, 0, sec.time_to_maturity/oy, r_rate,vol)
+	gamma = gamma * 100
 	stk_row.append('td').attr('id',sec_id+'_gamma').attr('class','gamma_col').attr('value',gamma)
 	var theta = BSM_theta(stockprice, sec.strike, 0, sec.time_to_maturity/oy, r_rate,vol)
-	stk_row.append('td').attr('id',sec_id+'_theta').attr('class','theta_col').attr('value',theta)
+	theters = theta/price_step/price_step_price * global_margin
+	stk_row.append('td').attr('id',sec_id+'_theta').attr('class','theta_col').attr('value',theters)
 	var vega = BSM_vega(stockprice, sec.strike, 0, sec.time_to_maturity/oy, r_rate,vol)
-	var vega =  Math.ceil(vega / 10) * 10
+	vega = vega/price_step/price_step_price
+	vega =  Math.ceil(vega / 10) * 10
 	stk_row.append('td').attr('id',sec_id+'_vega').attr('class','vega_col').attr('value',vega)
 	stk_row.append('td').attr('id',sec_id+'_open_pos').text(sec.open_pos)
 	stk_row.append('td').attr('id',sec_id+'_num_trades').text(sec.num_trades)
@@ -97,7 +104,7 @@ for (var i in s1) {
 	var sec_id = s1_0_0[pc].values[0].key.split(' ')[0]
 	var put_id = sec_id
 	stk_row.append('td').attr('id',call_id+'_'+put_id+'_strike').attr('style','text-align:right').attr('class','strike').text(sec.strike)
-	stk_row.append('td').attr('id',call_id+'_'+put_id+'_volatility').attr('class','volatility').text(sec.volatility.toFixed(2))
+	stk_row.append('td').attr('id',call_id+'_'+put_id+'_volatility').attr('class','volatility').text(sec.volatility.toFixed(3))
 	stk_row.append('td').attr('id',sec_id+'_theo').attr("onclick","clicker(this,'Put')").text(sec.theor_price)
 	stk_row.append('td').attr('id',sec_id+'_bid').attr("onclick","clicker(this,'Put')").text(sec.bid)
 	stk_row.append('td').attr('id',sec_id+'_ask').attr("onclick","clicker(this,'Put')").text(sec.ask)
@@ -105,11 +112,14 @@ for (var i in s1) {
 	stk_row.append('td').attr('id',sec_id+'_num_trades').text(sec.num_trades)
 	stk_row.append('td').attr('id',sec_id+'_open_pos').text(sec.open_pos)
 	var vega = BSM_vega(stockprice, sec.strike, 0, sec.time_to_maturity/oy, r_rate,vol)
-	var vega =  Math.ceil(vega / 10) * 10
+	vega = vega/price_step/price_step_price
+	vega =  Math.ceil(vega / 10) * 10
 	stk_row.append('td').attr('id',sec_id+'_vega').attr('class','vega_col').attr('value',vega)
 	var theta = BSM_theta(stockprice, sec.strike, 0, sec.time_to_maturity/oy, r_rate,vol)
-        stk_row.append('td').attr('id',sec_id+'_theta').attr('class','theta_col').attr('value',theta)
+	theters = theta/price_step/price_step_price * global_margin
+        stk_row.append('td').attr('id',sec_id+'_theta').attr('class','theta_col').attr('value',theters)
 	var gamma = BSM_gamma(stockprice, sec.strike, 0, sec.time_to_maturity/oy, r_rate,vol)
+	gamma = gamma * 100 
 	stk_row.append('td').attr('id',sec_id+'_gamma').attr('class','gamma_col').attr('value',gamma)
         var delta = BSM_delta2("Put",stockprice,sec.strike,0,sec.time_to_maturity/oy,r_rate,sec.volatility/100)
 	stk_row.append('td').attr('id',sec_id+'_delta').attr('class','delta_col').attr('value',delta).text(delta.toFixed(2))
@@ -122,6 +132,14 @@ for (var i in s1) {
 }
 tbody.append('input').attr('hidden','true').attr('value',25)
 }
+
+// I am hardcoding a midsedction of length 930 here, I might want to alter that
+table.append('tr')
+	.append('td')
+		.attr('colspan',stk_row._groups[0][0].children.length)
+	.append('div')
+		.attr('id','the_lengthener')
+		.attr('style','width:930px')
 
 // This is to create the frame when clicking on a security
 //
@@ -264,7 +282,8 @@ function calculateTotals() {
 
 
 // Udpate Totals
-
+pstepval = 11.58196
+global_margin = 0.3
 
 function updateTotals(garg) {
 	console.log(garg)
@@ -272,6 +291,9 @@ function updateTotals(garg) {
 	window.qty = d3.select(garg)["_groups"][0][0].value
 	qty = Number(qty)
 	var code = garg.id.split('_')[0]
+
+	price_step = 10
+	price_step_price = pstepval
 
 	var bgop = d3.select('#'+code+'_bgop')
 	bgop.text((Number(margins[code]["bgop"]) * qty).toFixed(0))
@@ -284,9 +306,11 @@ function updateTotals(garg) {
 	delt = Number(delt)
 	delt = delt * qty
 	gamm = d3.select('#'+code+'_gamma')["_groups"][0][0].attributes.value.value
+	gamm = gamm * 100
 	gamm = gamm * qty
 	gamm = Number(gamm)
 	thet = d3.select('#'+code+'_theta')["_groups"][0][0].attributes.value.value
+	thet = thet/price_step/price_step_price * global_margin
 	thet = thet * qty
 	thet = Number(thet)
 	veg = d3.select('#'+code+'_vega')["_groups"][0][0].attributes.value.value
@@ -342,7 +366,9 @@ function connectToTable(aro,otype) {
 			}
 		}
 	}
-	
+	if (side == 'Sell') {
+		qty = qty * -1
+	}
 	row.append('td').attr('id',coda+'_order_side').attr('class','order_side_val').text(side)
 	row.append('input').attr('id',coda+'_order_qty')
 			.attr('class','qty_input')
@@ -372,6 +398,7 @@ function connectToTable(aro,otype) {
 		bgonp.attr('style','color:rgb(0,255,0)')
 		go = margins[code]["bgonp"] * qty
 	}
+	go = go * .4
 	tots.attr('value',go)
 
 	gkt = d3.select('#order_totals_table').select('tbody')
@@ -527,6 +554,40 @@ function green_red(a,b) {
 	a.innerHTML = b
 }
 
+function gb(rowcode,color) {
+	// var row = d3.select('#RI95000BJ7B_last')
+	var row = d3.select('#'+rowcode)["_groups"][0][0].parentElement
+
+	if (color == 'green') {var layer = 'bomb'}
+	if (color == 'red') {var layer = 'blood'}
+	if (color == 'blue') {var layer = 'cool'}
+
+
+	d3.select(row).attr('class','strike_row '+layer)
+	setTimeout(function(){
+	d3.select(row).attr('class','strike_row brut')
+	},50)
+}
+
+
+
+function updateTheMatrix(message) {
+	var msg = message.payload.split(',')
+	var code = msg[2]
+//	console.log(mona[code])
+	mona[code].bid = Number(msg[3])
+	mona[code].ask = Number(msg[4])
+	mona[code].last = Number(msg[5])
+	mona[code].num_trades = Number(msg[6])
+	mona[code].open_pos = Number(msg[8])
+	mona[code].volatility = Number(msg[9])
+	mona[code].theor_price = Number(msg[10])
+//	console.log('done it')
+//	console.log(mona[code])
+}
+
+
+
 window.flashactive = true
 var mara = []
 var latest_msg;
@@ -539,7 +600,7 @@ function locate_the_options(message) {
 		mara.push(message)
 		return
 	}
-	if (code.startsWith('RI')) {
+	if (code.startsWith(seccode)) {
 		// $('#'+code+'_bid')[0].innerHTML = message.payload.split(',')[3]
 		green_red($('#'+code+'_bid')[0],message.payload.split(',')[3])
 		// $('#'+code+'_ask')[0].innerHTML = message.payload.split(',')[4]
@@ -548,73 +609,90 @@ function locate_the_options(message) {
 		// $('#'+code+'_last')[0].innerHTML = message.payload.split(',')[5]
 		if (message.payload.split(',')[5] < $('#'+code+'_last')[0].innerHTML) {
 			$('#'+code+'_last')[0].innerHTML = message.payload.split(',')[5]
-			var o = 0;
-			var c = 1                     //  set your counter to 1
-			var rowcode = $('#'+code+'_last')[0].parentElement.id
-			function myLoopR () {        //  create a loop function
-			   setTimeout(function () {    //  call a 3s setTimeout when the loop is called
-				d3.select('#'+rowcode).attr('style','background-color:rgba(255,'+o+','+o+','+c+')')
-			             //  your code here
-			      o=o+10;
-			      c = c - 0.04                     //  increment the counter
-			      if (o < 255) {            //  if the counter < 10, call the loop function
-			         myLoopR();             //  ..  again which will trigger another
-			      }                        //  ..  setTimeout()
-			   }, 1)
-
+//			var o = 0;
+//			var c = 1                     //  set your counter to 1
+//			var rowcode = $('#'+code+'_last')[0].parentElement.id
+//			function myLoopR () {        //  create a loop function
+//			   setTimeout(function () {    //  call a 3s setTimeout when the loop is called
+//				d3.select('#'+rowcode).attr('style','background-color:rgba(255,'+o+','+o+','+c+')')
+//			             //  your code here
+//			      o=o+10;
+//			      c = c - 0.04                     //  increment the counter
+//			      if (o < 255) {            //  if the counter < 10, call the loop function
+//			         myLoopR();             //  ..  again which will trigger another
+//			      }                        //  ..  setTimeout()
+//			   }, 1)
+//
+//			}
+			if (flashactive == true) {
+				var rowcode = code+'_last'
+				var color = 'green'
+				gb(rowcode,color)
 			}
-			if (flashactive == true) { myLoopR() }
 
 		} else {
 			if (message.payload.split(',')[5] > $('#'+code+'_last')[0].innerHTML) {
 				$('#'+code+'_last')[0].innerHTML = message.payload.split(',')[5]
-				var o = 0;   
-				var c = 1                    //  set your counter to 1
-				var rowcode = $('#'+code+'_last')[0].parentElement.id
-				function myLoop () {
-				          //  create a loop function
-				   setTimeout(function () {    //  call a 3s setTimeout when the loop is called
-					d3.select('#'+rowcode).attr('style','background-color:rgba('+o+',255,'+o+','+c+')')
-				             //  your code here
-				      o=o+10;
-				      c = c - 0.04                     //  increment the counter
-				      if (o < 255) {            //  if the counter < 10, call the loop function
-				         myLoop();             //  ..  again which will trigger another
-				      }                        //  ..  setTimeout()
-				   }, 1)
-				   
+//				var o = 0;   
+//				var c = 1                    //  set your counter to 1
+//				var rowcode = $('#'+code+'_last')[0].parentElement.id
+//				function myLoop () {
+//				          //  create a loop function
+//				   setTimeout(function () {    //  call a 3s setTimeout when the loop is called
+//					d3.select('#'+rowcode).attr('style','background-color:rgba('+o+',255,'+o+','+c+')')
+//				             //  your code here
+//				      o=o+10;
+//				      c = c - 0.04                     //  increment the counter
+//				      if (o < 255) {            //  if the counter < 10, call the loop function
+//				         myLoop();             //  ..  again which will trigger another
+//				      }                        //  ..  setTimeout()
+//				   }, 1)
+//				}
+				if (flashactive == true) {
+					var rowcode = code+'_last'
+                                	var color = 'red'
+                                	gb(rowcode,color)
 				}
-				if (flashactive == true) { myLoop() }
 			} else {
 				if (message.payload.split(',')[6]>$('#'+code+'_num_trades')[0].innerHTML) {
 					console.log('numup')
-				var o = 0;   
-				var c = 1                    //  set your counter to 1
-				var rowcode = $('#'+code+'_last')[0].parentElement.id
-				function myLoopB () {
-				          //  create a loop function
-				   setTimeout(function () {    //  call a 3s setTimeout when the loop is called
-					d3.select('#'+rowcode).attr('style','background-color:rgba('+o+','+o+',255,'+c+')')
-				             //  your code here
-				      o=o+10;
-				      c = c - 0.04                     //  increment the counter
-				      if (o < 255) {            //  if the counter < 10, call the loop function
-				         myLoopB();             //  ..  again which will trigger another
-				      }                        //  ..  setTimeout()
-				   }, 1)
-				   
+//				var o = 0;   
+//				var c = 1                    //  set your counter to 1
+//				var rowcode = $('#'+code+'_last')[0].parentElement.id
+//				function myLoopB () {
+//				          //  create a loop function
+//				   setTimeout(function () {    //  call a 3s setTimeout when the loop is called
+//					d3.select('#'+rowcode).attr('style','background-color:rgba('+o+','+o+',255,'+c+')')
+//				             //  your code here
+//				      o=o+10;
+//				      c = c - 0.04                     //  increment the counter
+//				      if (o < 255) {            //  if the counter < 10, call the loop function
+//				         myLoopB();             //  ..  again which will trigger another
+//				      }                        //  ..  setTimeout()
+//				   }, 1)
+//				   
+//				}
+				if (flashactive == true) {
+					var rowcode = code+'_last'
+                                	var color = 'blue'
+                                	gb(rowcode,color)
 				}
-				if (flashactive == true) { myLoopB() }
 				}
 			} 
 		} 
 		$('#'+code+'_num_trades')[0].innerHTML = message.payload.split(',')[6]
 		$('#'+code+'_open_pos')[0].innerHTML = message.payload.split(',')[8]
-		d3.select($('#'+code+'_last')[0].parentElement).select('.volatility')['_groups'][0][0].innerHTML = Number(message.payload.split(',')[9]).toFixed(2)
+		d3.select($('#'+code+'_last')[0].parentElement).select('.volatility')['_groups'][0][0].innerHTML = Number(message.payload.split(',')[9]).toFixed(3)
 //		$('#'+code+'_open_pos')[0].parentElement.children[7].innerHTML = Number(message.payload.split(',')[9]).toFixed(2)
 		$('#'+code+'_theo')[0].innerHTML = message.payload.split(',')[10]
 		$('#'+code+'_last')[0].innerHTML = message.payload.split(',')[5]
 	}
+	updateTheMatrix(message)
+
+	if (codeposher.includes(code)) {
+		$('#'+code+'_updateButt').click()
+	}
+
 }
 
 
@@ -961,9 +1039,13 @@ function recalculateGreeks(volva) {
 		delta = BSM_delta(stockprice, strike, 0, time_to_maturity/oy, r_rate,vol)
 		delta_put = delta - 1
 		gamma = BSM_gamma(stockprice, strike, 0, time_to_maturity/oy, r_rate,vol)
+		gamma = gamma * 100
+		price_step = 10
+		price_step_price = pstepval
 		theta = BSM_theta(stockprice, strike, 0, time_to_maturity/oy, r_rate,vol)
+		theta = theta/price_step/price_step_price * global_margin
 		vega =  BSM_vega(stockprice, strike, 0, time_to_maturity/oy, r_rate,vol)
-
+		vega = vega/price_step/price_step_price
 
 		var c1 = d3.select('#'+callcode+'_theor_price').attr('value',call_theo)
 		if (c1.text()) {c1.text(call_theo.toFixed(0))}
@@ -992,7 +1074,7 @@ function recalculateGreeks(volva) {
 // END OF RECALCULATEGREKES
 
 // SOME PARAMS OF INTEREST
-stockprice = Number($('#RIZ7').children()[3].innerText)
+stockprice = Number($('#RIZ7_last').innerText())
 d3.select('#mid_pane_header').attr('value',1)
 flashactive = false
 //

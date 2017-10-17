@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,15 +11,52 @@
   crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
-<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.css">
 
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<link rel="stylesheet" type="text/css" href="/static/dex/stylz.css">
 <script src="https://code.highcharts.com/stock/highstock.js"></script>
 <script src="https://code.highcharts.com/stock/modules/exporting.js"></script>
 
 
 <style>
+html {
+    background-color:black;
+}
+::-webkit-scrollbar {
+    width:9px;
+}
+::-webkit-scrollbar-corner {
+    background: transparent;
+}
+::-webkit-scrollbar-track {
+    -webkit-border-radius:5px;
+    border-radius:5px;
+    background:rgba(0,0,0,0.1);
+}
+
+::-webkit-scrollbar-thumb {
+    -webkit-border-radius:5px;
+    border-radius:5px;
+    background:rgba(0,0,0,0.2);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background:rgba(0,0,0,0.4);
+}
+
+::-webkit-scrollbar-thumb:window-inactive {
+    background:rgba(0,0,0,0.05);
+}
 body {
     font-size: 0.75rem;
+    max-height:800px;
+    overflow:hidden;
+}
+#div_for_futures_list {
+    overflow-y: scroll;
+    max-height: 600px;
+    padding-bottom: 100px;
 }
 div {
     border: 1px solid black;
@@ -36,10 +74,15 @@ div {
     min-width: 950px;
     padding-bottom: 250px;
     padding-left: 0px;
+    height:800px;
+    height:-webkit-fill-available;
 }
 #mid_pane_header {
     width: 96%;
     margin-right: auto;
+}
+#le==ft_col {
+    width:250px;
 }
 .mid_pane_table {
     width: 400px;
@@ -54,6 +97,12 @@ div {
     background-color:black;
     z-index: 5;
 }
+#div_for_futures_list {
+    overflow-y: scroll;
+    height: -webkit-fill-available;
+}
+
+
 #formita {
     width: 600px;
     margin-left: auto;
@@ -62,6 +111,12 @@ div {
 }
 #ultimate > table > tr >input {
     width: 70px;
+}
+form#add_trade_account {
+    width: 200px;
+---    padding-top: 10%;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 td {
@@ -173,6 +228,17 @@ div#alertwindow {
     overflow-x: hidden;
     transition: 0.5s;
 }
+div#alerttradeaccount {
+    height: 100%;
+    width: 100%;
+    position: fixed;
+    z-index: 10;
+    top: 0;
+    left: 0;
+    background-color: rgba(0,120,203,0.5);
+    overflow-x: hidden;
+    transition: 0.5s;
+}
 .brut {
     background-color: rgba(0,0,0,0);
     transition: 1s;
@@ -189,42 +255,39 @@ div#alertwindow {
     background-color: rgba(0,0,255,1);
     transition: 0s;
 }
-
+#account_list {
+    display: block;
+    height: 200px;
+    overflow-y: scroll;
+    transition: 1s;
+}
 </style>
 </head>
 <body>
 <div id="introscreen"></div>
 <div class="container-fluid">
   <div id="vhbox" class="row">
-    <div class="col-2" id="left_col">
-<div id='menubar'></div>
+    <div class="col" id="left_col">
+<div id='menubar'>
+<ul class="nav navbar-nav navbar-right">
+        {% if user.is_authenticated %}
+            <li><a href="{% url 'auth:logout' %}">Logout</a></li>
+            {% endif %}
+        </ul>
+<div class='row'>
+<div class='col'>
+    <h4 onclick="toggleAccountPage()">Accounts</h4>
+</div>
+<div class="col">
+<h4 onclick="toggleAccountList()">V</h4>
+</div>
+</div>
+</div>
+<div id="alerttradeaccount">
 <form id="add_trade_account" action="" method="post">
 {% csrf_token %}
 </form>
-<table>      
-<thead>
-	<tr>
-	<th>Sec</th>
-	<th>Bid</th>
-<th>Ask</th>
-<th>Last</th>
-</tr>
-</thead>
-<tbody>
-<tr id='RIZ7'>
-<td>RTS-12.17</td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr id='SiZ7'>
-<td>Si-12.17</td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-</tbody>
-</table>
+</div>
 <div id='alertwindow'>
 <form id='formita' action="" method="post">
 {% csrf_token %}
@@ -232,6 +295,7 @@ div#alertwindow {
 </div>
 </div>
     <div id="mid_pane" class="col">
+    <div id="mid_pane_accounts" style="display:none"></div>
       <form id="mid_pane_header" onsubmit="preacher(this)"></form>
 <div id="orders"></div>
     </div>
@@ -244,11 +308,24 @@ div#alertwindow {
 
  <div id="phone-calls">
 </div>
+<form id="refreshpos" action=" " method="post" style="display:none">
+{% csrf_token %}
+<input type="submit" value="May" id="yf" ></input>
+</form>
 <script src="https://d3js.org/d3.v4.min.js"></script>
  <script src="https://cdn.socket.io/socket.io-1.3.5.js"></script>
-<script src="https://code.jquery.com/jquery-1.11.1.js"></script>
-<script type="text/javascript" src="/static/dex/options_worker.js"></script>
+
 <script>
+console.log('options worker is here')
+var T1 = new Date();
+var times =  {'T1':T1,}
+window.futures = {% autoescape off %}{{ futures }}{% endautoescape %};
+window.mona = {% autoescape off %}{{ mona }}{% endautoescape %};
+window.rts_min = {% autoescape off %}{{ rts_min }}{% endautoescape %};
+window.rvi_min = {% autoescape off %}{{ rvi_min }}{% endautoescape %};
+window.accus = {% autoescape off %}{{ accus }}{% endautoescape %};
+window.cuser = "{{cuser}}";
+window.posh = {{positions|safe}}
 function dont_miss_the_strike(price) {
 window.rip = price
 }
@@ -257,56 +334,81 @@ function locate_the_options(message) {
 located_message = message
 }
 var sofar = []
-window.account = {{account|safe}}
-window.mona = {{mona|safe}};
-window.margins = {{margins|safe}};
-window.snap1 = {{snap1|safe}};
-window.snap2 = {{snap2|safe}};
-window.rts_min = {{rts_min|safe}};
-window.rvi_min = {{rvi_min|safe}};
-window.cuser = "{{cuser}}";
-var stockprice;
+
+function baltic() {
+}
+
 //var socket = io.connect({transports: ['websocket']});
 var socket = io.connect("http://139.59.208.173:3000/",{transports: ['websocket']});
+
 socket.on('fixa', function(msg){
 window.msg = msg
 
+if (msg.payload.split(',')[0] == 'baltic') {
+	baltic(msg)
+} else {
 
 if (msg.payload.split(',')[0] == 'ri_options') {
 	locate_the_options(msg)
 	//sofar.push(msg)
 } else {
 
-if (msg.payload.split(',')[0] == 'ri_snap_mirror') {
-console.log('mirroring')
-window.mirror = msg
-} else {
-if (msg.payload.split(',')[0] == 'bal') {
-//console.log(msg)
-$('#'+msg.payload.split(',')[2].split(' ')[0].replace(/\./g,''))[0].children[1].innerHTML = msg.payload.split(',')[3]
-$('#'+msg.payload.split(',')[2].split(' ')[0].replace(/\./g,''))[0].children[2].innerHTML = msg.payload.split(',')[4]
-$('#'+msg.payload.split(',')[2].split(' ')[0].replace(/\./g,''))[0].children[3].innerHTML = msg.payload.split(',')[5]
+	if (msg.payload.split(',')[0] == 'ri_snap_mirror') {
+		console.log('mirroring')
+		window.mirror = msg
+		var juice = {
+			key: Date.parse(msg.payload.split(',')[2]),
+			value: {
+		ttm_1:msg.payload.split(',')[5],
+		ttm_2:msg.payload.split(',')[9],
+		ttm_3:msg.payload.split(',')[13],
+		ttm_4:msg.payload.split(',')[17],
+		vol_1:msg.payload.split(',')[8],
+		vol_2:msg.payload.split(',')[12],
+		vol_3:msg.payload.split(',')[16],
+		vol_4:msg.payload.split(',')[20],
+			}
+		}
+		juw.push(juice)
+	} else {
+		if (msg.payload.split(',')[0] == 'bal') {
+			//console.log(msg)
+			$('#'+msg.payload.split(',')[2].split(' ')[0].replace(/\./g,''))[0].children[1].innerHTML = msg.payload.split(',')[3]
+			$('#'+msg.payload.split(',')[2].split(' ')[0].replace(/\./g,''))[0].children[2].innerHTML = msg.payload.split(',')[4]
+			$('#'+msg.payload.split(',')[2].split(' ')[0].replace(/\./g,''))[0].children[3].innerHTML = msg.payload.split(',')[5]
 
-if (msg.payload.split(',')[2].split(' ')[0].replace(/\./g,'') == 'RIZ7') {
-	stockprice = Number(msg.payload.split(',')[5])
-}
+			if (msg.payload.split(',')[2].split(' ')[0].replace(/\./g,'') == 'RIZ7') {
+				stockprice = Number(msg.payload.split(',')[5])
+			}
 
-dont_miss_the_strike(msg.payload.split(',')[5])
-//window.msg = msg
-}
-else {
-console.log('wtf?')
-}
-}
+			dont_miss_the_strike(msg.payload.split(',')[5])
+			//window.msg = msg
+		} else {
+			console.log('wtf?')
+			window.wtf = msg
+		}
+	}
 
 }
-    });
+}
+});
 </script>
 <script type="text/javascript" src="/static/dex/options_math.js"></script>
 <script type="text/javascript" src="/static/dex/worker.js"></script>
 <script type="text/javascript" src="/static/dex/worker_page2.js"></script>
 <script type="text/javascript" src="/static/dex/worker_hc.js"></script>
 <script type="text/javascript" src="/static/dex/worker_order.js"></script>
+<script type="text/javascript" src="/static/dex/switchsex.js"></script>
+<script>
+window.margins = {% autoescape off %}{{ margins }}{% endautoescape %};
+function uncrazeThePosh(posh) {
+	var push = []
+	push.message = posh
+	return push 
+}
+push = uncrazeThePosh(posh)
+miramaxW(push)
+</script>
 </body>
 </html>
 

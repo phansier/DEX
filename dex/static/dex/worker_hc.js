@@ -95,10 +95,15 @@ Highcharts.theme = {
 }
 Highcharts.setOptions(Highcharts.theme);
 
-
+vana = d3.entries(volterms)
 
 function chartyBoyFunk(index) {
 	if (index == 'RVI') { var datums = testo }
+	var t1 = vana.map(function(d) {return [d.value.day,d.value['ttm_1']]})
+	var t2 = vana.map(function(d) {return [d.value.day,d.value['ttm_2']]})
+	var t3 = vana.map(function(d) {return [d.value.day,d.value['ttm_3']]})
+	var t4 = vana.map(function(d) {return [d.value.day,d.value['ttm_4']]})
+	var t5 = vana.map(function(d) {return [d.value.day,d.value['ttm_5']]})
 
 	window.joni = Highcharts.stockChart('chartyboy', {
 

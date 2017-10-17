@@ -90,16 +90,110 @@ var dur = d3.select('body').selectAll('.expiration_head_col')["_groups"][0]
 dur[dur.length-1]
 d3.select(dur[dur.length-1]).attr('id','lastexp')
 wid = d3.select('#lastexp').append('div').attr('id','widener').attr('style','width:840px;borders:0,')
-
+window.flashactive = true
 //END of COMMANDS
 
 
 
+formol = d3.select('#add_trade_account')
+formol.append('label').text('NAME')
+formol.append('input')
+	.attr('type','text')
+	.attr('name','NAME')
+	.attr('required',true)
+formol.append('input')
+	.attr('readonly','readonly')
+	.attr('name','CBPLIMIT')
+	.attr('value',100000)
+formol.append('input')
+	.attr('readonly','readonly')
+	.attr('hidden',true)
+	.attr('name','FIRMID')
+	.attr('value',cuser)
+formol.append('input')
+	.attr('type','submit')
+	.attr('value','Go')
+$('#add_trade_account').toggle()
+
+$('#add_trade_account').submit(function(e){
+    $.post('/dex/formol/', $(this).serialize(),function(data){
+      // console.log(data)
+      window.accus = JSON.parse(data)
+      loadUserAccounts('added')
+    });
+    e.preventDefault();
+});
+d3.select('#menubar').append('div').attr('id','account_list')
+var al = d3.select('#account_list')
+al.append('h6').attr('onclick','togta()').text('Add Acount')
+var tl = al.append('table')
+accus.forEach(function(d) {
+	tlr = tl.append('tr')
+	tlr.append('td').attr('value',d.NAME).text(d.NAME)
+	tlr.append('td').attr('value',d.CBPLIMIT).text(d.CBPLIMIT)
+})
+
+d3.select('#account_list')["_groups"][0][0].style.height = '0px'
+
+function toggleAccountList() {
+	var mu = d3.select('#account_list')["_groups"][0][0].style.height
+	if (mu == '0px') {
+		d3.select('#account_list')["_groups"][0][0].style.height = '250px'
+	} else {
+		d3.select('#account_list')["_groups"][0][0].style.height = '0px'
+	} 
+}
+
+
+
+
+
+function loadUserAccounts(key) {
+	if (key == 'added') {
+//		$('#add_trade_account').toggle()
+		$('#alerttradeaccount').toggle()
+		console.log('i should print just once')
+	}
+	var al = d3.select('#account_list')
+	if (al) {
+		al.remove()
+		al = d3.select('#menubar').append('div').attr('id','account_list')
+	} else {
+		al = d3.select('#menubar').append('div').attr('id','account_list')
+	}
+	
+	var tl = al.append('table')
+	accus["accounts"].forEach(function(d) {
+		tlr = tl.append('tr')
+		tlr.append('td').attr('value',d.NAME).text(d.NAME)
+		tlr.append('td').attr('value',d.CBPLIMIT).text(d.CBPLIMIT)
+	})
+	al.append('h6').attr('onclick','togta()').text('Add Account')
+    
+}
+
+function togta() {
+//	$('#add_trade_account').toggle()
+	$('#alerttradeaccount').toggle()
+}
+
+
+
+
 //SCREEN PULL OUT
+$('#alerttradeaccount').toggle()
+$('#add_trade_account').toggle()
 $('#alertwindow').toggle()
 function closeScreen() {
     document.getElementById("introscreen").style.width = "0";
 }
 closeScreen()
+
+
+function toggleAccountPage() {
+	$('#mid_pane_header').toggle()
+	$('#mid_pane_table').toggle()
+	$('#mid_pane_accounts').toggle()
+}
 
 
