@@ -20,7 +20,6 @@ $('#confirmsendform').on('submit', function () {
 });
 
 
-cuser_firm = 'jbt1'
 
 function confirmSend(chunga) {
 window.chunga = chunga
@@ -113,7 +112,7 @@ function confirmationTable() {
 		row.append('td').text(d.id)
 		row.append('td').text(d.SECNAME)
 		row.append('td').text(d.QTY)
-		row.append('td').text(d.PRICE)
+		row.append('td').text(d.PRICE.toFixed(2))
 		row.append('td').text(d.BUYSELL)
 	})
 	table.append('button').attr('type','button').attr('onclick','byeBye()').text('BYE')
@@ -222,7 +221,7 @@ function miramax(dats) {
 					if (num % 1 != 0) { num = num.toFixed(2) }
 					tr4.append('td').attr('class','smoke_avsonprice').text(num)
 					if (tot_net > 0) {var bid_or_ask = 'bid'; var z = -1} else {var bid_or_ask = 'ask';var z = 1}
-					var price_to_close = $('#'+code+'_'+bid_or_ask)[0].innerHTML
+					var price_to_close = mona[code+" [SPBOPT]"][bid_or_ask]
 					tr4.append('td').attr('class','smoke_avsonprice').attr('id',code+'_position').text(price_to_close)
 					var vm_if_close = (num - price_to_close) * z * margins[code].pstepval 
 					tr4.append('td').attr('class','smoke_varmargin').text(vm_if_close)
@@ -245,21 +244,50 @@ indicatorPaste(dats)
 
 }
 
+
 function updateMe(sec) {
 	console.log('eh')
 	window.eh = sec
 	var code = eh.id.split("_")[0]
 	var position = Number($('#'+code+'_totnet')[0].innerText)
 	if (position > 0) {
-		var price = mona[code+" [SPBOPT]"].bid
+		var price_to_close = mona[code+" [SPBOPT]"].bid
 	} else {
-		var price = mona[code+" [SPBOPT]"].ask
+		var price_to_close = mona[code+" [SPBOPT]"].ask
 	}
 	var theor_price = mona[code+" [SPBOPT]"].theor_price
 
-	$('#'+code+'_position')[0].innerText = price
-	
+	var num = $('#'+code+'_position_apr')[0].innerText
+	num = Number(num) 
+	var tot_net = $('#'+code+'_totnet')[0].innerText
+	var tot_net = Number(tot_net)
+	if (tot_net > 0) {var bid_or_ask = 'bid'; var z = -1} else {var bid_or_ask = 'ask';var z = 1}
+
+	$('#'+code+'_position')[0].innerText = price_to_close
+
+
+	var vm_if_close = (num - price_to_close) * z * margins[code].pstepval
+	var vm_theo = (num - theor_price) * z * margins[code].pstepval
+
+	$('#'+code+'_position_vm1').text(vm_if_close)
+	$('#'+code+'_position_vm2').text(vm_theo.toFixed(2))
+	var gk = runtheGreek(code)
+	var d = gk['delta'] * tot_net
+	var v = gk['vega'] * tot_net
+	var g = gk['gamma'] * tot_net
+	var t = gk['theta'] * tot_net
+	$('#'+code+'_position_d').text(d.toFixed(2))
+	$('#'+code+'_position_v').text(v)
+	$('#'+code+'_position_g').text(g.toFixed(3))
+	$('#'+code+'_position_t').text(t.toFixed())
+
+console.log('update YEAH!!')	
 }
+
+
+
+
+
 
 
 
@@ -289,12 +317,28 @@ function miramaxW(dats) {
 	entries3.forEach(function(d) {
 		console.log("UNDERLYING IS",d.key)
 		tr1 = tablusa.append('tr')
-		tr1.append('tr').attr('onclick','hideMyKids(this)').text(d.key)
+		var tro = tr1.append('tr').attr('class','overall_keyco_row').attr('onclick','hideMyKids(this)')
+		tro.append('td').attr('id',d.key+'_overall_key').attr('class','overall_keyco').text(d.key)
+		tro.append('td').attr('id',d.key+'_overall_vm1').text()
+		tro.append('td').attr('id',d.key+'_overall_vm2').text()
+		tro.append('td').attr('id',d.key+'_overall_d').text()
+		tro.append('td').attr('id',d.key+'_overall_v').text()
+		tro.append('td').attr('id',d.key+'_overall_g').text()
+		tro.append('td').attr('id',d.key+'_overall_t').text()
+
 		tr1 = tr1.append('tr')
 		d.values.forEach(function(e) {
 			console.log("______expiration",e.key)
 			tr2 = tr1.append('tr').attr('class','smoky')
-			tr2.append('tr').attr('onclick','hideMyKids(this)').text("_____"+e.key.slice(0,10))
+			var ky = e.key.slice(0,10)
+			var tro = tr2.append('tr').attr('class','overall_keyco_row').attr('onclick','hideMyKids(this)')
+			tro.append('td').attr('id',d.key+'_'+ky+'_overall_key').attr('class','overall_keyco').text("_____"+ky)
+			tro.append('td').attr('id',d.key+'_'+ky+'_overall_vm1').text()
+			tro.append('td').attr('id',d.key+'_'+ky+'_overall_vm2').text()
+			tro.append('td').attr('id',d.key+'_'+ky+'_overall_d').text()
+			tro.append('td').attr('id',d.key+'_'+ky+'_overall_v').text()
+			tro.append('td').attr('id',d.key+'_'+ky+'_overall_g').text()
+			tro.append('td').attr('id',d.key+'_'+ky+'_overall_t').text()
 			tr2 = tr2.append('tr')
 			
 				e.values.forEach(function(g){
@@ -317,22 +361,22 @@ function miramaxW(dats) {
 					tr4.append('td').attr('class','smoke_total_net').attr('id',code+'_totnet').text(tot_net)
 					var num = g.AVRPOSNPRICE
 					if (num % 1 != 0) { num = num.toFixed(2) }
-					tr4.append('td').attr('class','smoke_avsonprice').text(num)
+					tr4.append('td').attr('class','smoke_avsonprice').attr('id',code+'_position_apr').text(num)
 					if (tot_net > 0) {var bid_or_ask = 'bid'; var z = -1} else {var bid_or_ask = 'ask';var z = 1}
-					var price_to_close = $('#'+code+'_'+bid_or_ask)[0].innerHTML
+					var price_to_close = mona[code+" [SPBOPT]"][bid_or_ask]
 					tr4.append('td').attr('class','smoke_avsonprice').attr('id',code+'_position').text(price_to_close)
 					var vm_if_close = (num - price_to_close) * z * margins[code].pstepval 
-					tr4.append('td').attr('class','smoke_varmargin').text(vm_if_close)
-					tr4.append('td').attr('class','smoke_varmargin').text(g.VARMARGIN)
+					tr4.append('td').attr('class','smoke_varmargin').attr('id',code+'_position_vm1').text(vm_if_close)
+					tr4.append('td').attr('class','smoke_varmargin').attr('id',code+'_position_vm2').text(g.VARMARGIN)
 					var gk = runtheGreek(code)
-					var d = gk['delta'].toFixed(2) * tot_net
+					var d = gk['delta'] * tot_net
 					var v = gk['vega'] * tot_net
-					var g = gk['gamma'].toFixed(3) * tot_net
-					var t = gk['theta'].toFixed() * tot_net
-					tr4.append('td').attr('class','smoke_delta').text(d)
-					tr4.append('td').attr('class','smoke_vega').text(v)
-					tr4.append('td').attr('class','smoke_gamma').text(g)
-					tr4.append('td').attr('class','smoke_theta').text(t)
+					var g = gk['gamma'] * tot_net
+					var t = gk['theta'] * tot_net
+					tr4.append('td').attr('class','smoke_delta').attr('id',code+'_position_d').text(d.toFixed(2))
+					tr4.append('td').attr('class','smoke_vega').attr('id',code+'_position_v').text(v)
+					tr4.append('td').attr('class','smoke_gamma').attr('id',code+'_position_g').text(g.toFixed(3))
+					tr4.append('td').attr('class','smoke_theta').attr('id',code+'_position_t').text(t.toFixed())
 					tr4.append('button').attr('id',code+'_updateButt').attr('onclick','updateMe(this)').attr('hidden',true)
 				})
 			
@@ -340,8 +384,11 @@ function miramaxW(dats) {
 	})
 
 indicatorPaste(dats)
+
 window.codeposher = dats.message.map(function(d) {return d.SEC_SHORT_NAME})
 }
+
+
 
 
 $('#refreshpos').submit(function(e){

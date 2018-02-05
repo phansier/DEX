@@ -313,6 +313,9 @@ function indicatorPaste(dats) {
 
 function runtheGreek(code) {
 
+	var option_base = mona[code+" [SPBOPT]"].option_base
+	var stockprice = Number($('#'+option_base+'_last')[0].innerText)
+
 	var c_or_p = margins[code].optiontype
 	var sec = mona[code+" [SPBOPT]"]
 	var vol = sec.volatility/100
@@ -339,3 +342,12 @@ function runtheGreek(code) {
 	// console.log('theters:',theters)
 	return {'code':code,'c_or_p':c_or_p,'theo':theo,'delta':delta,'gamma':gamma,'vega':vega,'theta':theters}
 }
+
+
+
+function updateMalls() {
+	codeposher.forEach(function(d) {
+		$('#'+d+'_updateButt').click()
+	})
+}
+

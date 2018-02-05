@@ -129,8 +129,9 @@ for (var i in s1) {
 	stk_row.attr('id',call_id+'_'+put_id+'_'+sec.strike)
 	}
 //	stk_row.append('td').attr('id',sec_id).text(sec_id)
-}
 tbody.append('input').attr('hidden','true').attr('value',25)
+}
+//tbody.append('input').attr('hidden','true').attr('value',25)
 }
 
 // I am hardcoding a midsedction of length 930 here, I might want to alter that
@@ -690,6 +691,7 @@ function locate_the_options(message) {
 	updateTheMatrix(message)
 
 	if (codeposher.includes(code)) {
+		console.log('codeposher update')
 		$('#'+code+'_updateButt').click()
 	}
 
