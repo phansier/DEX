@@ -21,6 +21,7 @@ from dex import views as vws
 
 urlpatterns = [
     url(r'^$', vws.home, name='home'),
+    url(r'^blockchain/$',vws.blockchainview, name='blockchainview'),
     url(r'^dex/ordercomm/',vws.ordercomm,name='ordercomm'),
     url(r'^dex/formol/',vws.orderadd,name='orderadd'),
     url(r'^dex/refreshpos/',vws.refreshpositions,name='refreshpositions'),

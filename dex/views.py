@@ -22,6 +22,12 @@ from sqlalchemy import create_engine
 #connection2 = engine2.connect()
 #df = pd.read_sql('SELECT * FROM ri_options',connection2)
 #mona = df.set_index('id').head().to_json()
+def blockchainview(request):
+	return render(request, 'dex/indexBC.html')
+
+
+
+
 def first_account():
 	first_account = {'OPTIONS_PREMIUM': 0.0, 'TRDACCID': ' ', 'CURRCODE': 'SUR', 'CBP_PREV_LIMIT': 0.0, 'CBPLUSED': 0.0, 'LIQUIDITY_COEFF': 0.0, 'CBPLUSED_FOR_POSITIONS': 0.0, 'LAST_CLEAR_DATE':' ', 'DAYCREATED': ' ', 'KGO': 1.0, 'VARMARGIN': 0.0, 'CBPLUSED_FOR_ORDERS': 0.0, 'CBPLIMIT': '100000', 'TS_COMISSION': 0.0, 'FIRMID': ' ', 'LIMIT_TYPE': 'Cash', 'ACCRUEDINT': 0.0, 'CBPLPLANNED': 0.0, 'REAL_VARMARGIN': 0.0, 'NAME': 'MAIN'}
 	return first_account

@@ -269,7 +269,7 @@ div#alerttradeaccount {
   <div id="vhbox" class="row">
     <div class="col" id="left_col">
 <div id='menubar'>
-<ul class="nav navbar-nav navbar-right">
+<ul class="nav navbar-nav navbar-right" id="uloggout">
         {% if user.is_authenticated %}
             <li><a href="{% url 'auth:logout' %}">Logout</a></li>
             {% endif %}
@@ -325,6 +325,7 @@ window.rts_min = {% autoescape off %}{{ rts_min }}{% endautoescape %};
 window.rvi_min = {% autoescape off %}{{ rvi_min }}{% endautoescape %};
 window.accus = {% autoescape off %}{{ accus }}{% endautoescape %};
 window.cuser = "{{cuser}}";
+window.cuser_firm = cuser+"_MAIN";
 window.posh = {{positions|safe}}
 function dont_miss_the_strike(price) {
 window.rip = price
