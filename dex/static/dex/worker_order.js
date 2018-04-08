@@ -112,7 +112,7 @@ function confirmationTable() {
 		row.append('td').text(d.id)
 		row.append('td').text(d.SECNAME)
 		row.append('td').text(d.QTY)
-		row.append('td').text(d.PRICE.toFixed(2))
+		row.append('td').text(d.PRICE)
 		row.append('td').text(d.BUYSELL)
 	})
 	table.append('button').attr('type','button').attr('onclick','byeBye()').text('BYE')

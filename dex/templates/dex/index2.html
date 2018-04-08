@@ -261,7 +261,24 @@ div#alerttradeaccount {
     overflow-y: scroll;
     transition: 1s;
 }
+
+#overview_page {
+    position: absolute;
+    width: -webkit-fill-available;
+    background-color: rgb(34,34,34);
+    z-index: 5;
+}
+#c3 {
+    background-color: rgb(34,34,34);
+    color: grey;
+    display: block;
+    overflow-y: hidden;
+    overflow-x: hidden;
+    width: 900px;
+    height: 650px;
+}
 </style>
+<link href="/static/dex/c3.min.css" rel="stylesheet">
 </head>
 <body>
 <div id="introscreen"></div>
@@ -295,6 +312,8 @@ div#alerttradeaccount {
 </div>
 </div>
     <div id="mid_pane" class="col">
+    <div id="c3B"></div>
+    <div id="overview_page"></div>
     <div id="mid_pane_accounts" style="display:none"></div>
       <form id="mid_pane_header" onsubmit="preacher(this)"></form>
 <div id="orders"></div>
@@ -400,6 +419,9 @@ if (msg.payload.split(',')[0] == 'ri_options') {
 <script type="text/javascript" src="/static/dex/worker_hc.js"></script>
 <script type="text/javascript" src="/static/dex/worker_order.js"></script>
 <script type="text/javascript" src="/static/dex/switchsex.js"></script>
+<script type="text/javascript" src="/static/dex/d3pie.min.js"></script>
+<script type="text/javascript" src="/static/dex/zardulu.js"></script>
+<script type="text/javascript" src="/static/dex/c3.min.js"></script>
 <script>
 window.margins = {% autoescape off %}{{ margins }}{% endautoescape %};
 function uncrazeThePosh(posh) {

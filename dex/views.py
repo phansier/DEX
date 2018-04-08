@@ -4,6 +4,7 @@ from django.forms.models import model_to_dict
 
 from .models import Comments, User, Orders,TradeAccount, Position
 import json
+import time
 import datetime
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse, HttpResponseServerError
@@ -22,6 +23,21 @@ from sqlalchemy import create_engine
 #connection2 = engine2.connect()
 #df = pd.read_sql('SELECT * FROM ri_options',connection2)
 #mona = df.set_index('id').head().to_json()
+import requests
+def data_from_api():
+    # url = 'http://iss.moex.com/iss/engines/futures/markets/forts/securities.json'
+    url = 'http://iss.moex.com/iss/engines/futures/markets/forts/securities.json?iss.json=extended'
+    obj = requests.get(url)
+    #data = json.loads(obj.content)
+    data = json.loads(obj.content.decode('utf-8'))
+    # market_data = data[1]['securities'][1]
+    market_data = data[1]['marketdata'][1]
+    dd = pd.DataFrame(market_data)
+    dud = dd[['SECID','BID','OFFER','LAST','LASTCHANGEPRCNT','VALTODAY']]
+    dud.rename(columns={'BID':'bid','OFFER':'ask','LAST':'last','LASTCHANGEPRCNT':'change','VALTODAY':'valtoday'},inplace=True)
+    dud = dud.sort_values('valtoday',ascending=False).set_index('SECID').T.to_json()
+    return dud
+
 def blockchainview(request):
 	return render(request, 'dex/indexBC.html')
 
@@ -78,6 +94,7 @@ def home(request):
     rts_min['rea_var'] = 252 * np.cumsum(rts_min['returns'] ** 2) / np.arange(len(rts_min))
     rts_min['rea_vol'] = np.sqrt(rts_min['rea_var'])
     rts_min = rts_min.T.to_json()
+#    df = pd.read_sql('SELECT * FROM opsall',connection2)
     df = pd.read_sql('SELECT * FROM ri_options',connection2)
     df2 = pd.read_sql('SELECT * FROM ri_options_fixed',connection2)
 #    bal = pd.read_sql('SELECT * FROM bal',connection2)
@@ -93,6 +110,7 @@ def home(request):
     futures = pd.read_sql('SELECT * FROM baltic',connection2)
     futures['id'] = futures['id'].str.split().str[0]
     futures = futures.sort_values('valtoday',ascending=False).set_index('id').T.to_json()
+    futures = data_from_api()
     return render(request, 'dex/index2.html', {'futures':futures,
                     'mona':mona,'rts_min':rts_min,'accus':accus,
                     'margins':margins,'rvi_min':rvi_min,'cuser':cuser,'positions':positions})
@@ -125,6 +143,97 @@ def orderadd(request):
             accus.append(model_to_dict(s))
             print(model_to_dict(s))
         return HttpResponse(json.dumps({'accounts': accus}))
+
+def API_getter(futs_or_ops,split_or_not):
+	url_options = 'https://iss.moex.com/iss/engines/futures/markets/options/securities.json?iss.json'
+	url_futures = 'https://iss.moex.com/iss/engines/futures/markets/forts/securities.json'
+	if futs_or_ops == 'options':
+		url = url_options
+	else:
+		if futs_or_ops == 'futures':
+			url = url_futures
+		else:
+			return print('Please input futures or options as arg in function')
+
+	html = requests.get(url)
+#	jj = json.loads(html.text)
+	jj = html.json()
+	md = pd.DataFrame(jj['marketdata']['data'],columns=jj['marketdata']['columns'])
+	sd = pd.DataFrame(jj['securities']['data'],columns=jj['securities']['columns'])
+	if split_or_not == 'split':
+		return md,sd
+	else:
+		ch = md.set_index('SECID')
+		ch_2 = sd.set_index('SECID')
+		cced = pd.concat([ch,ch_2],axis=1)
+		return cced
+
+@csrf_exempt
+def option_levels(request):
+    if request.method == 'POST':
+
+        print('mama liucha')
+        cced = API_getter('options','n')
+        cced['CALL'] = cced.SECNAME.str.contains('Call')
+        cced['PUT'] = cced.SECNAME.str.contains('Put')
+        cao = cced[['CALL','ASSETCODE','OICHANGE','VOLTODAY','VALTODAY','NUMTRADES','PREVOPENPOSITION']]
+        cao['CALL'] = cao['CALL'].astype(int)
+        sums = cao.groupby(['ASSETCODE','CALL']).sum().sort_values('VALTODAY',ascending=False)
+        print(sums)
+        sums = sums.reset_index().T.to_json()
+#        sums = sums.T.to_json()
+        return HttpResponse(json.dumps({'rr':[sums]}))
+
+
+# This is to get the open position information
+zulu = pd.read_pickle('borapik_indexed.p')
+zulu.drop('name',axis=1,inplace=True)
+z2 = zulu.reset_index()
+z2['moment'] = pd.to_datetime(z2['moment'])
+last_year = datetime.datetime.today() - pd.DateOffset(year=(datetime.datetime.today().year - 1))
+z2 = z2.loc[z2['moment']>last_year]
+z2.set_index(['name_type_iz','moment'],inplace=True)
+@csrf_exempt
+def zardulu(request):
+	if request.method == 'POST':
+		start = time.time()
+		print('ZARDULU!!')
+		locaso = request.POST.copy()['zardulu']
+		print(locaso)
+		mole = zulu.loc[locaso+'_C_0'].sort_index().drop_duplicates().T.to_json()
+		mole2 = zulu.loc[locaso+'_C_1'].sort_index().drop_duplicates().T.to_json()
+		mole3 = zulu.loc[locaso+'_P_0'].sort_index().drop_duplicates().T.to_json()
+		mole4 = zulu.loc[locaso+'_P_1'].sort_index().drop_duplicates().T.to_json()
+		end = time.time()
+		print('this is the time it took')
+		print(end - start)
+		return HttpResponse(json.dumps({locaso+'_C_0':mole,locaso+'_C_1':mole2,locaso+'_P_0':mole3,locaso+'_P_1':mole4}))
+
+@csrf_exempt
+def zardulu_one_year(request):
+        if request.method == 'POST':
+                start = time.time()
+                print('ZARDULU!!')
+                z3 = z2.sort_index().drop_duplicates().to_json(orient='split')
+                end = time.time()
+                print('this is the time it took')
+                print(end - start)
+                return HttpResponse(json.dumps(z3))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 def shoot_confirmation(msg):
     pos = pd.DataFrame(msg['legs'])

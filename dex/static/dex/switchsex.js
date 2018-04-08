@@ -6,9 +6,9 @@ function switchSecurities(codax) {
 //		return 'Sors'
 //	}
 //}
-
+window.codax = codax
 seccode = codax.slice(0,2)
-stockprice = Number(d3.select('#'+codax+'_last')["_groups"][0][0].innerText)
+//stockprice = Number(d3.select('#'+codax+'_last')["_groups"][0][0].innerText)
 
 d3.select('#mid_pane_table').remove()
 mena = d3.entries(mona)
@@ -127,9 +127,9 @@ exh.attr('onclick','close_body(this)')
 var all_the_strikes = s1_0.map(function(d){return Number(d.key)})
 // sp = d3.select('#left_col').append('div')
 // sp.text(115030)
-if (seccode == 'RI') {var titler = 'RIZ7'}
-if (seccode == 'Si') {var titler = 'SiZ7'}
-
+//if (seccode == 'RI') {var titler = 'RIZ7'}
+//if (seccode == 'Si') {var titler = 'SiZ7'}
+var titler = seccode
 sp = stockprice
 
 for (var i in all_the_strikes) {
@@ -195,14 +195,14 @@ futsal.forEach(function(d,i){
 	var last = Number(d.value.last)
 	var change = Number(d.value.change)
 	tr.append('td').attr('id',coda+'_id').attr('value',coda).attr('onclick',"switchSecurities(\""+coda+"\")").text(coda)
-	tr.append('td').attr('id',coda+'_last').attr('value',last).attr('style','text-align:center').text(last)
+	tr.append('td').attr('id',coda+'_last').attr('value',last).attr('style','text-align:right').text(last)
 	tr.append('td').attr('id',coda+'_bid').attr('value',bid).attr('style','text-align:center').text(bid)
 	tr.append('td').attr('id',coda+'_ask').attr('value',ask).attr('style','text-align:center').text(ask)
 	var chn = tr.append('td').attr('id',coda+'_change').attr('value',change).text(change)
 
-	if (change > 0) { chn.attr('style','text-align:center;color:green')}
-	if (change < 0) { chn.attr('style','text-align:center;color:red')}
-	if (change ==  0) { chn.attr('style','text-align:center;color:grey')}
+	if (change > 0) { chn.attr('style','text-align:right;color:green')}
+	if (change < 0) { chn.attr('style','text-align:right;color:red')}
+	if (change ==  0) { chn.attr('style','text-align:right;color:grey')}
 
 })
 // END OF FUTURES TABLE
