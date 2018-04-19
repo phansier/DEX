@@ -15,14 +15,47 @@ Including another URLconf
 """
 from django.conf.urls import url,include
 from django.contrib import admin
-
+from django.contrib.auth import views as auth_views
+from dex import views as vws
 
 
 urlpatterns = [
+    url(r'^$', vws.home, name='home'),
+    url(r'^blockchain/$',vws.blockchainview, name='blockchainview'),
+    url(r'^dex/ordercomm/',vws.ordercomm,name='ordercomm'),
+    url(r'^dex/formol/',vws.orderadd,name='orderadd'),
+    url(r'^dex/refreshpos/',vws.refreshpositions,name='refreshpositions'),
+    url(r'^dex/optionlevels/',vws.option_levels,name='option_levels'),
+    url(r'^dex/zardulu/',vws.zardulu,name='zardulu'),
+    url(r'^dex/zardulu_one_year/',vws.zardulu_one_year,name='zardulu_one_year'),
+    url(r'^dex/futuresResponse/',vws.futuresResponse,name='futuresResponse'),
+    url(r'^node_api/$', vws.node_api, name='node_api'),
+#    url(r'^ajax_mark_as_read/$', views.ajax_mark_as_read, name='ajax_mark_as_read'),
     url(r'^admin/', admin.site.urls),
-    url(r'^$', include('landing.urls')),
+    url(r'^login/$', auth_views.login, {'template_name': 'admin/login.html'}, name='login'),
+    url(r'^logout/$', auth_views.logout, {'next_page': '/'}, name='logout'),
+    url(r'^accounts/', include('django.contrib.auth.urls', namespace="auth")),
+#    url(r'^$', include('landing.urls')),
     url(r'^about/', include('landing.urls')),
     url(r'^deck/',include('deck.urls')),
     url(r'^IVdeck/',include('IVdeck.urls')),
+#    url(r'^dex/',include('dex.urls')),
     url(r'^accounts/',include('django.contrib.auth.urls')),
 ]
+
+#from django.conf.urls import patterns, include, url
+ 
+#urlpatterns = patterns('',
+#    url(r'^$', 'core.views.home', name='home'),
+#    url(r'^node_api$', 'core.views.node_api', name='node_api'),
+#    url(r'^login/$', 'django.contrib.auth.views.login', {'template_name': 'admin/login.html'}, name='login'),
+#    url(r'^logout/$', 'django.contrib.auth.views.logout', {'next_page': '/'}, name='logout'),
+#)
+#from django.conf.urls import patterns, include, url
+
+#urlpatterns = [
+#    url(r'^$', 'core.views.home', name='home'),
+#    url(r'^node_api$', 'core.views.node_api', name='node_api'),
+#    url(r'^login/$', 'django.contrib.auth.views.login', {'template_name': 'admin/login.html'}, name='login'),
+#    url(r'^logout/$', 'django.contrib.auth.views.logout', {'next_page': '/'}, name='logout'),
+#]

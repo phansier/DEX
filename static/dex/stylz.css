@@ -1,0 +1,68 @@
+.ui-resizable-handle.ui-resizable-e {
+    border: 0;
+}
+
+#futures_list > tr>td {
+    width: 150px;
+}
+
+.pos_indicator_call {
+    position: absolute;
+    margin-top: -18px;
+    border: 0;
+    margin-left: -20px;
+}
+.pos_indicator_put {
+    position: absolute;
+    margin-top: -18px;
+    border: 0;
+    margin-left: 60px;
+}
+
+#tiesto td, #tiesto th {
+    border: 1px dashed;
+    text-align: center;
+    min-width: 60px;
+}
+.smoke_smoke {
+    color:transparent;   
+    width:
+}
+.smoke_code {
+    width: 130px;
+}
+.smoke_strike {
+    width: 86px;
+}
+.smoke_type {
+    width: 73px;
+}
+.smoke_avsonprice {
+    width: 80px;
+}
+.smoked {
+    height: 0px;
+    display: block;
+    overflow: hidden;
+    transition: 1s;
+}
+.smoky {
+    transition: 1s;
+}
+.tini {
+    display:block;
+    overflow:hidden;
+}
+
+.overall_keyco {
+    width: 700px;
+    text-align: left!important;
+}
+
+.overall_keyco_row {
+    color:aqua;
+}
+uloggout {
+    position: absolute;
+    bottom: 10px;
+}
