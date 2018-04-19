@@ -5,6 +5,7 @@ var colas = ['Th','𝚫','Γ','Θ','V','OP','NUM_T','LAST','BID','ASK','THEO']
 var putas = ['THEO','BID','ASK','LAST','NUM_T','OP','V','Θ','Γ','𝚫','Th']
 var stockprice = 113380
 var r_rate = 0.005
+var sp = futures['RIM8'].last
 
 function modern_head() {
 	bomba = d3.select('#mid_pane')
@@ -400,26 +401,34 @@ function connectToTable(aro,otype) {
 	if (side == 'Buy') {
 		buydepo.attr('style','color:rgb(0,255,0)')
 		go = margins[code]["buydepo"] * qty
+        delt = d3.select('#'+code+'_delta')["_groups"][0][0].attributes.value.value
+        gamm = d3.select('#'+code+'_gamma')["_groups"][0][0].attributes.value.value
+        thet = d3.select('#'+code+'_theta')["_groups"][0][0].attributes.value.value
 	} else {
 		bgonp.attr('style','color:rgb(0,255,0)')
 		go = margins[code]["bgonp"] * qty
+        delt = d3.select('#'+code+'_delta')["_groups"][0][0].attributes.value.value
+        gamm = d3.select('#'+code+'_gamma')["_groups"][0][0].attributes.value.value
+        thet = d3.select('#'+code+'_theta')["_groups"][0][0].attributes.value.value
+        delt = delt * -1
+        thet = thet * -1
+        gamm = gamm * -1
 	}
 	go = go * .4
 	tots.attr('value',go)
 
 	gkt = d3.select('#order_totals_table').select('tbody')
 	gtkrow = gkt.append('tr').attr('id',code+'_greeks')
-	delt = d3.select('#'+code+'_delta')["_groups"][0][0].attributes.value.value
+//	delt = d3.select('#'+code+'_delta')["_groups"][0][0].attributes.value.value
 	gtkrow.append('td').text(Number(delt).toFixed(2))
-	gamm = d3.select('#'+code+'_gamma')["_groups"][0][0].attributes.value.value
+//	gamm = d3.select('#'+code+'_gamma')["_groups"][0][0].attributes.value.value
 	gtkrow.append('td').text(Number(gamm).toFixed(2))
-	thet = d3.select('#'+code+'_theta')["_groups"][0][0].attributes.value.value
+//	thet = d3.select('#'+code+'_theta')["_groups"][0][0].attributes.value.value
 	gtkrow.append('td').text(Number(thet).toFixed(0))
 	veg = d3.select('#'+code+'_vega')["_groups"][0][0].attributes.value.value
 	gtkrow.append('td').text(Number(veg).toFixed(0))
 
 	calculateTotals()
-
 }
 
 
@@ -460,11 +469,11 @@ function close_body(thing) {
 //
 
 var all_the_strikes = s1_0.map(function(d){return Number(d.key)})
-sp = d3.select('#left_col').append('div')
-sp.text(115030)
+//sp = d3.select('#left_col').append('div')
+//sp.text(115030)
 
 for (var i in all_the_strikes) {
-	if ((Number(sp["_groups"][0][0].innerText) > all_the_strikes[i]) && (Number(sp["_groups"][0][0].innerText) < all_the_strikes[Number(i)+1])) {
+	if ((sp > all_the_strikes[i]) && (sp < all_the_strikes[Number(i)+1])) {
 		var stuko = all_the_strikes[i]
 		var stuko2 = all_the_strikes[Number(i)+1]
 		console.log(stuko,stuko2)

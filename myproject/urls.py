@@ -28,6 +28,7 @@ urlpatterns = [
     url(r'^dex/optionlevels/',vws.option_levels,name='option_levels'),
     url(r'^dex/zardulu/',vws.zardulu,name='zardulu'),
     url(r'^dex/zardulu_one_year/',vws.zardulu_one_year,name='zardulu_one_year'),
+    url(r'^dex/futuresResponse/',vws.futuresResponse,name='futuresResponse'),
     url(r'^node_api/$', vws.node_api, name='node_api'),
 #    url(r'^ajax_mark_as_read/$', views.ajax_mark_as_read, name='ajax_mark_as_read'),
     url(r'^admin/', admin.site.urls),

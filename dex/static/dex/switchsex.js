@@ -169,6 +169,11 @@ d3.select('body').selectAll('.strike_selector_col').attr('onclick','strikeViews(
 d3.select('body').selectAll('.expiration_head_col')["_groups"][0].forEach(function(d) {close_body(d)})
 
 d3.select('#dashboard_activate').text(titler)
+    
+window.sec_strikes = d3.nest().key(function(d){ return d.value.strike}).entries(mena)
+sec_strikes.sort(function(x, y){
+       return d3.ascending(Number(x.key), Number(y.key));
+})
 }
 
 
@@ -180,10 +185,16 @@ futurama = d3.select('#left_col')
 					.attr('id','futures_list')
 var truby = futurama.append('tr')
 futures_cols.forEach(function(a) {
+    var checho = ''
+    if (a == 'ID') {checho = 'id'}
+    if (a == 'LAST') {checho = 'last'}
+    if (a == 'BID') {checho = 'bid'}
+    if (a == 'ASK') {checho = 'ask'}
+    if (a == 'CHG') {checho = 'CHG'}
 	if (a == 'ID') {
-		truby.append('th').text(a)
+		truby.append('th').attr('class','futures_list_'+checho).text(a)
 	} else {
-		truby.append('th').attr('style','text-align:center').text(a)
+		truby.append('th').attr('class','futures_list_'+checho).attr('style','text-align:center').text(a)
 	}
 })
 var futsal = d3.entries(futures)
@@ -195,10 +206,10 @@ futsal.forEach(function(d,i){
 	var last = Number(d.value.last)
 	var change = Number(d.value.change)
 	tr.append('td').attr('id',coda+'_id').attr('value',coda).attr('onclick',"switchSecurities(\""+coda+"\")").text(coda)
-	tr.append('td').attr('id',coda+'_last').attr('value',last).attr('style','text-align:right').text(last)
-	tr.append('td').attr('id',coda+'_bid').attr('value',bid).attr('style','text-align:center').text(bid)
-	tr.append('td').attr('id',coda+'_ask').attr('value',ask).attr('style','text-align:center').text(ask)
-	var chn = tr.append('td').attr('id',coda+'_change').attr('value',change).text(change)
+	tr.append('td').attr('id',coda+'_last').attr('value',last).attr('class','futures_list_last').attr('style','text-align:right').text(last)
+	tr.append('td').attr('id',coda+'_bid').attr('value',bid).attr('class','futures_list_bid').attr('style','text-align:center').text(bid)
+	tr.append('td').attr('id',coda+'_ask').attr('value',ask).attr('class','futures_list_ask').attr('style','text-align:center').text(ask)
+	var chn = tr.append('td').attr('id',coda+'_change').attr('value',change).attr('class','futures_list_change').text(change)
 
 	if (change > 0) { chn.attr('style','text-align:right;color:green')}
 	if (change < 0) { chn.attr('style','text-align:right;color:red')}
@@ -208,11 +219,19 @@ futsal.forEach(function(d,i){
 // END OF FUTURES TABLE
 // BEGIN OF BALTIC
 futuresflash = false
+
 function baltic(gb) {
 	var coda = gb.payload.split(',')[2].split(' ')[0]
 	var bid = gb.payload.split(',')[3]
 	var ask = gb.payload.split(',')[4]
 	var last = gb.payload.split(',')[5]
+    var change = gb.payload.split(',')[6]
+    var valtoday = gb.payload.split(',')[7]
+    futures[coda].bid = bid
+    futures[coda].ask = ask
+    futures[coda].last = last
+    futures[coda].change = change
+    futures[coda].valtoday = valtoday
 	if (bid.split('.').length == 2) {
 		bid = Number(bid).toFixed(2)
 		ask = Number(ask).toFixed(2)
@@ -228,12 +247,12 @@ function baltic(gb) {
 			last = Number(last)
 		}
     }
-//    d3.select('#SiZ7_bid')["_groups"][0][0].innerText
+    change = Number(change).toFixed(3)
     
     guba(coda,'bid',bid)
     guba(coda,'ask',ask)
     guba(coda,'last',last)
-    // guba(coda,'change',change)
+    guba(coda,'change',change)
 	
 	// d3.select('#'+coda+'_id').attr('value',coda).text(coda)
 	// d3.select('#'+coda+'_bid').attr('value',bid).text(bid)
@@ -249,9 +268,12 @@ function guba(a,b,n) {
 		// if (b == 'last') {var o = last}
 		// if (b == 'change') {var o = change}
 
-		if (n > o) { colt.attr('style','color:green');gubagb(colt,'green')}
-		if (o > n) { colt.attr('style','color:red');gubagb(colt,'red')}
-		if (n == o) { colt.attr('style','color:grey')}
+//		if (n > o) { colt.attr('style','color:green');gubagb(colt,'green')}
+//		if (o > n) { colt.attr('style','color:red');gubagb(colt,'red')}
+//		if (n == o) { colt.attr('style','color:grey')}
+        if (n > o) { colt.style('color','green');gubagb(colt,'green')}
+		if (o > n) { colt.style('color','red');gubagb(colt,'red')}
+		if (n == o) { colt.style('color','grey')}
 		colt.attr('value',n)
 		colt.text(n)
     }

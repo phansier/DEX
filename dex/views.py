@@ -30,13 +30,14 @@ def data_from_api():
     obj = requests.get(url)
     #data = json.loads(obj.content)
     data = json.loads(obj.content.decode('utf-8'))
-    # market_data = data[1]['securities'][1]
+    sec_data = data[1]['securities'][1]
+    sec_data = pd.DataFrame(sec_data).set_index('SECID').T.to_json()
     market_data = data[1]['marketdata'][1]
     dd = pd.DataFrame(market_data)
     dud = dd[['SECID','BID','OFFER','LAST','LASTCHANGEPRCNT','VALTODAY']]
     dud.rename(columns={'BID':'bid','OFFER':'ask','LAST':'last','LASTCHANGEPRCNT':'change','VALTODAY':'valtoday'},inplace=True)
     dud = dud.sort_values('valtoday',ascending=False).set_index('SECID').T.to_json()
-    return dud
+    return dud,sec_data
 
 def blockchainview(request):
 	return render(request, 'dex/indexBC.html')
@@ -110,8 +111,8 @@ def home(request):
     futures = pd.read_sql('SELECT * FROM baltic',connection2)
     futures['id'] = futures['id'].str.split().str[0]
     futures = futures.sort_values('valtoday',ascending=False).set_index('id').T.to_json()
-    futures = data_from_api()
-    return render(request, 'dex/index2.html', {'futures':futures,
+    futures,futures_sec = data_from_api()
+    return render(request, 'dex/index2.html', {'futures_sec':futures_sec,'futures':futures,
                     'mona':mona,'rts_min':rts_min,'accus':accus,
                     'margins':margins,'rvi_min':rvi_min,'cuser':cuser,'positions':positions})
 
@@ -184,6 +185,23 @@ def option_levels(request):
 #        sums = sums.T.to_json()
         return HttpResponse(json.dumps({'rr':[sums]}))
 
+#futures_daily = pd.read_csv('futures_daily_041718.csv')
+#futures_daily.set_index(['<TICKER>','<DATE>'],inplace=True)
+FutsD = pd.read_pickle('FuturesDaily.p')
+FutsD1 = FutsD.reset_index().set_index(['<TICKER>','<DATE>'])
+
+@csrf_exempt
+def futuresResponse(request):
+	if request.method == 'POST':
+		reqq = request.POST.copy()
+		print(reqq['secid'])
+		f_d = FutsD1.loc[reqq['secid']].drop_duplicates().sort_index()
+		f_d = f_d.reset_index()
+		f_d['<DATE>'] = f_d['<DATE>'].astype(str)
+		f_d.set_index('<DATE>',inplace=True)
+		f_d['<CHANGE>'] = (f_d['<CLOSE>'] - f_d['<CLOSE>'].shift(1))/f_d['<CLOSE>']
+		f_d['log_ret'] = np.log(f_d['<CLOSE>']) - np.log(f_d['<CLOSE>'].shift(1))
+		return HttpResponse(json.dumps(f_d.T.to_json()))
 
 # This is to get the open position information
 zulu = pd.read_pickle('borapik_indexed.p')
@@ -214,11 +232,11 @@ def zardulu_one_year(request):
         if request.method == 'POST':
                 start = time.time()
                 print('ZARDULU!!')
-                z3 = z2.sort_index().drop_duplicates().to_json(orient='split')
+                z3 = z2.sort_index().drop_duplicates().reset_index().to_json(orient='records')
                 end = time.time()
                 print('this is the time it took')
                 print(end - start)
-                return HttpResponse(json.dumps(z3))
+                return HttpResponse(json.dumps(z3),content_type="application/json")
 
 
 

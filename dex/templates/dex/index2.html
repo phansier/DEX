@@ -92,7 +92,7 @@ div {
 #orders {
     position: fixed;
     height: 250px;
-    width: 71%;
+    width: 75%;
     bottom: 0;
     background-color:black;
     z-index: 5;
@@ -268,6 +268,46 @@ div#alerttradeaccount {
     background-color: rgb(34,34,34);
     z-index: 5;
 }
+#overview_page div {
+    padding-bottom: 10px;
+}
+#overview_page button {
+    font-size: 11px;
+}
+
+#mid_pane button {
+    color: grey;
+    background: black;
+    border:grey;
+    font-size: 11px;
+}
+#mid_pane div {
+    border:1px;
+}
+#menubar {
+    font-size: 16px;	
+}
+#menubar row {
+    border:0px
+}
+#menubar col {
+    border:0px
+}
+#analyze_page_svg text {
+    fill:white
+}
+
+
+
+
+
+
+#statistics_page {
+    position: absolute;
+    width: -webkit-fill-available;
+    background-color: rgb(34,34,34);
+    z-index: 5;
+}
 #c3 {
     background-color: rgb(34,34,34);
     color: grey;
@@ -277,6 +317,26 @@ div#alerttradeaccount {
     width: 900px;
     height: 650px;
 }
+
+#analyze_page_menu {
+    padding: 0px 10px 10px 50px;
+}
+#analyze_page_menu .c3-xgrid line {
+    stroke: black
+}
+#analyze_page_menu .c3-ygrid line {
+    stroke: black
+}
+#analyze_page_menu .domain {
+    stroke: white;
+    fill: white
+}
+#analyze_page_menu input {
+    background:transparent;
+    border: 1px;
+    color:lightgrey;
+}
+
 </style>
 <link href="/static/dex/c3.min.css" rel="stylesheet">
 </head>
@@ -293,10 +353,10 @@ div#alerttradeaccount {
         </ul>
 <div class='row'>
 <div class='col'>
-    <h4 onclick="toggleAccountPage()">Accounts</h4>
+    <div onclick="toggleAccountPage()">Accounts</div>
 </div>
 <div class="col">
-<h4 onclick="toggleAccountList()">V</h4>
+<div onclick="toggleAccountList()">V</div>
 </div>
 </div>
 </div>
@@ -314,6 +374,8 @@ div#alerttradeaccount {
     <div id="mid_pane" class="col">
     <div id="c3B"></div>
     <div id="overview_page"></div>
+    <div id="statistics_page"></div>
+    <div id="analyze_page"></div>
     <div id="mid_pane_accounts" style="display:none"></div>
       <form id="mid_pane_header" onsubmit="preacher(this)"></form>
 <div id="orders"></div>
@@ -339,6 +401,7 @@ console.log('options worker is here')
 var T1 = new Date();
 var times =  {'T1':T1,}
 window.futures = {% autoescape off %}{{ futures }}{% endautoescape %};
+window.futures_sec = {% autoescape off %}{{ futures_sec }}{% endautoescape %};
 window.mona = {% autoescape off %}{{ mona }}{% endautoescape %};
 window.rts_min = {% autoescape off %}{{ rts_min }}{% endautoescape %};
 window.rvi_min = {% autoescape off %}{{ rvi_min }}{% endautoescape %};
@@ -422,6 +485,8 @@ if (msg.payload.split(',')[0] == 'ri_options') {
 <script type="text/javascript" src="/static/dex/d3pie.min.js"></script>
 <script type="text/javascript" src="/static/dex/zardulu.js"></script>
 <script type="text/javascript" src="/static/dex/c3.min.js"></script>
+<script src="https://unpkg.com/function-plot@1/dist/function-plot.js"></script>
+
 <script>
 window.margins = {% autoescape off %}{{ margins }}{% endautoescape %};
 function uncrazeThePosh(posh) {
