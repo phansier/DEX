@@ -1,5 +1,9 @@
 # user-chosen
 *.h5
+*.p
+futures_daily_041718.csv
+crons/minute_snap_log.txt
+crons/RTS_min.csv
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
