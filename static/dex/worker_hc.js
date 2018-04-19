@@ -8,20 +8,20 @@ evol.forEach(function(d) {
 })
 
 vs = {'v1':[],'v2':[],'v3':[],'v4':[],'v5':[]}
-d3.entries(snap1).forEach(function(d) {
-	d = d.value
-	var minuto = d.index
-	var m = [minuto,d.vol_1]
-	vs['v1'].push(m)
-	var m = [minuto,d.vol_2]
-	vs['v2'].push(m)
-	var m = [minuto,d.vol_3]
-	vs['v3'].push(m)
-	var m = [minuto,d.vol_4]
-	vs['v4'].push(m)
-	var m = [minuto,d.vol_5]
-	vs['v5'].push(m)
-})
+//d3.entries(snap1).forEach(function(d) {
+//	d = d.value
+//	var minuto = d.index
+//	var m = [minuto,d.vol_1]
+//	vs['v1'].push(m)
+//	var m = [minuto,d.vol_2]
+//	vs['v2'].push(m)
+//	var m = [minuto,d.vol_3]
+//	vs['v3'].push(m)
+//	var m = [minuto,d.vol_4]
+//	vs['v4'].push(m)
+//	var m = [minuto,d.vol_5]
+//	vs['v5'].push(m)
+//})
 
 
 Highcharts.theme = {
@@ -95,7 +95,7 @@ Highcharts.theme = {
 }
 Highcharts.setOptions(Highcharts.theme);
 
-vana = d3.entries(volterms)
+//vana = d3.entries(volterms)
 
 function chartyBoyFunk(index) {
 	if (index == 'RVI') { var datums = testo }
