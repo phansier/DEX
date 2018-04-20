@@ -89,7 +89,7 @@ def home(request):
     account = pd.read_sql('SELECT * from trade_accounts where firmid = \''+str(cuser)+'\'',connection2)
     account = account.T.to_json()
     rts_min = pd.read_csv('crons/RTS_min.csv',index_col='<DATE>')
-    rvi_min = pd.read_csv('crons/RVI_min.csv',index_col='date').T.to_json()
+    #rvi_min = pd.read_csv('crons/RVI_min.csv',index_col='date').T.to_json()
     rts_min['log_ret'] = np.log(rts_min['<CLOSE>']) - np.log(rts_min['<CLOSE>'].shift(1))
     rts_min['returns'] = np.log(rts_min['<CLOSE>'] / rts_min['<CLOSE>'].shift(1))
     rts_min['rea_var'] = 252 * np.cumsum(rts_min['returns'] ** 2) / np.arange(len(rts_min))
@@ -114,7 +114,7 @@ def home(request):
     futures,futures_sec = data_from_api()
     return render(request, 'dex/index2.html', {'futures_sec':futures_sec,'futures':futures,
                     'mona':mona,'rts_min':rts_min,'accus':accus,
-                    'margins':margins,'rvi_min':rvi_min,'cuser':cuser,'positions':positions})
+                    'margins':margins,'cuser':cuser,'positions':positions})
 
 def orderadd(request):
     print('account add requested')
