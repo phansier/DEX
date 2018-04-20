@@ -33,12 +33,12 @@ var rea_vol = emin.slice(emin.length-1,emin.length)[0].value.rea_vol
 
 
 
-evol = d3.entries(rvi_min)
-var rvi_pc = evol.slice(evol.length - 1,evol.length)[0].value.close
-r2 = vt.append('tr')
-r2.append('td').attr('id','rvi_pc').attr('value',rvi_pc).attr('class','vol_indicator').text(rvi_pc)
-r2.append('td')
-r2.append('td').text('RVI')
+//evol = d3.entries(rvi_min)
+//var rvi_pc = evol.slice(evol.length - 1,evol.length)[0].value.close
+//r2 = vt.append('tr')
+//r2.append('td').attr('id','rvi_pc').attr('value',rvi_pc).attr('class','vol_indicator').text(rvi_pc)
+//r2.append('td')
+//r2.append('td').text('RVI')
 
 
 function devotRank(data,window) {
@@ -55,7 +55,7 @@ function devotRank(data,window) {
 	return [rank,pct]
 
 }
-rp = devotRank(evol,360)
+//rp = devotRank(evol,360)
 
 function rankot(days) {
 	var numd = days
@@ -77,7 +77,7 @@ r4.append('td').attr('id','percentile_days_value').attr('class','vol_indicator')
 r4.append('td')
 r4.append('td').text(' day IV %')
 
-rankot(30)
+//rankot(30)
 
 
 

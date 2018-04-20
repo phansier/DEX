@@ -1,11 +1,11 @@
 
 var testo = []
-evol.forEach(function(d) {
-	var dia = new Date(d.key).getTime()
-	var m = [dia,d.value.close]
-
-	testo.push(m)
-})
+//evol.forEach(function(d) {
+//	var dia = new Date(d.key).getTime()
+//	var m = [dia,d.value.close]
+//
+//	testo.push(m)
+//})
 
 vs = {'v1':[],'v2':[],'v3':[],'v4':[],'v5':[]}
 //d3.entries(snap1).forEach(function(d) {

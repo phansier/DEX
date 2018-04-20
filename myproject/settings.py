@@ -27,6 +27,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['moskvant.com','139.59.208.173','0.0.0.0']
 
+ADMINS = [('JBT', 'moskvant.ai@gmail.com')]
 
 # Application definition
 

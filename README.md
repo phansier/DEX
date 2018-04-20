@@ -1,4 +1,3 @@
-THIS IS THE RELEASE BRANCH 0.0.1
 Creating a release branch 
 Release branches are created from the develop branch. For example, say version 1.1.5 is the current production release and we have a big release coming up. The state of develop is ready for the “next release” and we have decided that this will become version 1.2 (rather than 1.1.6 or 2.0). So we branch off and give the release branch a name reflecting the new version number:
 
