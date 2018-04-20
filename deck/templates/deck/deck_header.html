@@ -9,8 +9,8 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-	<meta name="description" content="KingAdmin - Bootstrap Admin Dashboard Theme">
-	<meta name="author" content="The Develovers">
+	<!-- <meta name="description" content="KingAdmin - Bootstrap Admin Dashboard Theme"> -->
+	<!-- <meta name="author" content="The Develovers"> -->
 	<!-- CSS -->
   {% load staticfiles %}
 	<link href="{% static "deck/assets/css/bootstrap.min.css" %}" rel="stylesheet" type="text/css">
@@ -40,16 +40,18 @@
 	<!-- <link rel="apple-touch-icon-precomposed" sizes="72x72" href="assets/ico/kingadmin-favicon72x72.png"> -->
 	<!-- <link rel="apple-touch-icon-precomposed" sizes="57x57" href="assets/ico/kingadmin-favicon57x57.png"> -->
 	<!-- <link rel="shortcut icon" href="assets/ico/favicon.png"> -->
+	<!-- #00070d -->
+	<!-- #313132 -->
   <style>
   html,
-  body {height:100%;background-color: #313132}
+  body {height:100%;background-color: white}
   body { padding-bottom: 70px; }
   a {color: #FFFFFF; font-family: Lato; font-size: 8;}
   a:hover {color: #FFFFFF}
   .name {font-family: Lato; text-align: center; color:#FFFFFF;}
   h1 {color:#FFFFFF}
   p {color:#FFFFFF; font-family: Lato;}
-  footer {position: fixed; height: 50px; bottom: 0; width: 100%; color: #313132;}
+  footer {position: fixed; height: 50px; bottom: 0; width: 100%; color: #00070d;}
   .value {color:white}
 
 
@@ -86,18 +88,39 @@
     padding: 0;
   }
   .wrapper {
-    background-color: #313132;
+    background-color: #2F4F4F;/*#00070d*/
     padding: 0;
   }
   .auto-align {
     padding: 0;
   }
+	.overlay {
+	    /* Height & width depends on how you want to reveal the overlay (see JS below) */
+	    height: 100%;
+	    width: 0;
+	    position: fixed; /* Stay in place */
+	    z-index: 10000000; /* Sit on top */
+	    left: 0;
+	    top: 0;
+	    /*background-color: rgb(25,36,41); /* Black fallback color */
+	    /*background-color: rgba(0,0,0, 0.9); /* Black w/opacity */
+			background-color: #1e2b34; /* Black w/opacity */
+	    overflow-x: hidden; /* Disable horizontal scroll */
+	    transition: 0.5s; /* 0.5 second transition effect to slide in or slide down the overlay (height or width, depending on reveal) */
+	}
+	.overlay .closebtn {
+	    position: absolute;
+	    top: -15px;
+	    right: 45px;
+	    font-size: 60px;
+	}
   </style>
   <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
   <script src="https://code.highcharts.com/stock/highstock.js"></script>
   <!-- <script src="http://code.highcharts.com/highcharts.js"></script> -->
   <script src="https://code.highcharts.com/stock/modules/exporting.js"></script>
-  <script src="http://0.0.0.0:8000/static/deck/js/themes/dark-unica.js"></script>
+  <script src="{% static "deck/js/themes/dark-unica.js" %}"></script>
+	<link href="{% static "deck/assets/css/skins/transparent.css" %}" rel="stylesheet" type="text/css">
   <!-- <script>
   function draw_chart(ticker) {
 
@@ -316,10 +339,30 @@ $('container_1').highcharts({
   				<div class="clearfix">
   					<a id="reflow-chart" href="#" class="pull-left toggle-sidebar-collapse"><i class="fa fa-bars"></i></a>
   					<!-- logo -->
-  					<div class="pull-left left logo">
+  					<div class="pull-left left">
   						<!-- <a href="index.html"><img src="assets/img/kingadmin-logo-white.png" alt="KingAdmin - Admin Dashboard" /></a> -->
-  						<h1 class="sr-only">KingAdmin Admin Dashboard</h1>
+							<div class='top-bar-left'>
+								<button type="button" id="instrument" class="btn btn-link" onclick="draw_chart(this.innerHTML)"></button>
+								<button type="button" id="shortname" class="btn btn-link btn-global-volume"></button>
+								<button type="button" id="LAST" class="btn btn-link btn-global-volume"></button>
+								<button type="button" id="LASTCHANGEPRCNT" class="btn btn-link btn-global-volume"></button>
+								<button type="button" id="ASSETCODE" class="btn btn-link btn-global-volume" onclick="asset_grouping(this.innerHTML)"></button>
+								<button type="button" id="UPDATETIME" class="btn btn-link btn-global-volume"></button>
+
+
+								<!-- <ul class='nav navbar-nav'> -->
+									<!-- <li><p id='instrument' onclick="draw_chart(this.innerHTML)"></p></li>
+									<li><p id='shortname'></p></li>
+									<li><p>989</p></li>
+									<p id='instrument' onclick="draw_chart(this.innerHTML)"></p>
+									<p id='shortname'></p>
+									<p>989</p> -->
+								<!-- </ul> -->
+							</div>
+
+
   					</div>
+
   					<!-- end logo -->
   					<div class="pull-right right">
   						<!-- search box -->

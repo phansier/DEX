@@ -31,8 +31,11 @@ ALLOWED_HOSTS = ['moskvant.com','139.59.208.173','0.0.0.0']
 # Application definition
 
 INSTALLED_APPS = [
+    'vol',
     'deck',
+    'dex',
     'landing',
+    'IVdeck',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

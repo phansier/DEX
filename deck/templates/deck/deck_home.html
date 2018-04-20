@@ -6,48 +6,43 @@
     <nav class="main-nav">
       <ul class="main-menu">
         <li><a href="#" class="js-sub-menu-toggle"><i class="fa fa-dashboard fa-fw"></i><span class="text">Dashboard</span>
-          <i class="toggle-icon fa fa-angle-down"></i></a>
+          <i class="toggle-icon fa fa-angle-left"></i></a>
           <ul class="sub-menu ">
             <table class="table">
-              <tbody>
-                <tr><td>Variation in Margin:</td><td>+ 3600</td></tr>
-                <tr><td>Current Net Positions:</td><td> 21 000</td></tr>
-                <tr><td>Planned Net Positions:</td><td> 13 000</td></tr>
-              </tbody>
-            </table>
-          </ul>
-        </li>
-        <li class="active"><a href="#" class="js-sub-menu-toggle"><i class="fa fa-navicon"></i><span class="text">Recent Symbols</span>
-          <i class="toggle-icon fa fa-angle-left"></i></a>
-          <ul class="sub-menu open">
-            <table class="table">
               <thead>
-                <tr><th>Symbol</th><th>Last</th><th>Change</th></tr>
+                <tr>
+                  <td>ID</td>
+                  <td>LAST</td>
+                  <td>LAST CHG %</td>
+                </tr>
               </thead>
               <tbody>
-                {% regroup data by ASSETCODE as data_list %}
-                {% for future in data_list %}
-                <tr>
-                  <!-- <td><a href="/deck/{{underlying.id}}">{{ future.name }}</a></td> -->
-                  <td onclick=draw_chart('{{future.grouper}}') data-toggle='collapse' data-target=#{{future.grouper}}>
-                    {{ future.grouper }}
-                  </td>
-                  <!-- <td>{{ future.8 }}</td>
-                  <td>{{ future.11 }}</td> -->
-                </tr>
-                <tr  id={{ future.grouper }} class='collapse out'>
-                  {% for p in future.list %}
-                  <td>{{p.SECID}}</td>
-                  {% endfor %}
-                </tr>
-                {% endfor %}
 
+                {% for p in market_data|dictsortreversed:'VALTODAY' %}
+                  {% if p.LAST > 0 %}
+                    <tr>
+                      <td style='{padding:0}'><a href="#" onclick=draw_chart("{{ p.SECID }}") style='display:table;background-color:transparent;'>{{ p.SECID }}</a></td>
+                      <td>{{ p.LAST }}</td>
+                      <td>{{ p.LASTCHANGEPRCNT }}</td>
+                    </tr>
+                    {% endif %}
+                {% endfor %}
               </tbody>
             </table>
           </ul>
+
+
+
         </li>
 
 
+
+        <li><a href="#" class="js-sub-menu-toggle"><i class="fa fa-dashboard fa-fw"></i><span class="text">Dashboard</span>
+          <i class="toggle-icon fa fa-angle-down"></i></a>
+          <ul class="sub-menu ">
+
+          </ul>
+        </li>
 
       </ul>
     </nav>
@@ -59,8 +54,8 @@
 <div id="main-content-wrapper" class="content-wrapper ">
   <!-- top general alert -->
   <div class="alert alert-danger top-general-alert">
-    <span>If you <strong>can't see the logo</strong> on the top left, please reset the style on right style switcher (for upgraded theme only).</span>
-    <button type="button" class="close">&times;</button>
+    <span>If you are <strong>MATIAS JONSON</strong>  click <a href='/deck/ML'>HERE</a> </span>
+
   </div>
   <!-- end top general alert -->
   <!-- <div class="row">
@@ -90,31 +85,41 @@
   {% regroup ops by future as opsa_list %}
   <div class="content">
 
+
+
     <div class="main-content">
+      <!-- <div class="panel-group">
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h4 class="panel-title">
+                <a data-toggle="collapse" href="#collapse2">GRAPHLOW 2</a>
+              </h4>
+            </div>
+          <div id="collapse2" class="panel-collapse collapse" style='background-color:#1e2b34'>
+
+          </div>
+        </div>
+      </div> -->
 
       <div class="panel-group">
           <div class="panel panel-default">
             <div class="panel-heading">
               <div class='row'>
-                <div class='col-md-10'>
+                <div class='col-md-4'>
                   <h4 class="panel-title">
-                    <a data-toggle="collapse" href="#collapse1">GRAPHLOW</a>
+                    <a data-toggle="collapse" href="#collapse1" onclick="navver()">QUIKCHART</a>
                   </h4>
                 </div>
-                <div class='col-md-2'>
-                  <!-- <h4 class="panel-title">
-                    <a data-toggle="tab" href="#tab2">Text on Right</a>
-                    <a data-toggle="tab" href="#tab3">Text on Right</a>
-                  </h4> -->
-                  <!-- <div class='chart-nav'>
-                    <ul id="sales-stat-tab">
-                      <li class="active"><a href="#">John</a></li>
-                    </ul>
-                  </div> -->
+                <div id='quick_chart_navver' class='col-md-8' style="display:none;">
+                  <ul class="nav navbar-nav navbar-left" style={height:inherit}>
+                    <li><a href="#" class="" onclick="draw_chart(glob_ticker)">CHART</a></li>
+                    <li><a href="#" class="" onclick="draw_term_structure()">TERM STRUCTURE</a></li>
+                    <li><a href="#" class="">MONTE CARLO</a></li>
+                  </ul>
                 </div>
               </div>
             </div>
-            <div id="collapse1" class="panel-collapse collapse">
+            <div id="collapse1" class="panel-collapse collapse" style='background-color:#1e2b34'>
               <!-- <ul class="nav nav-tabs">
                 <li class="active"><a data-toggle='tab' href="#wrtc">Home</a></li>
                 <li><a data-toggle='tab' href="#montecarlo">Monte Carlo</a></li>
@@ -129,13 +134,44 @@
           </div>
         </div>
         <!-- END OF GRAPHFLOW -->
+
+
         <div class="panel-group">
+            <div class="panel panel-default">
+              <div class="panel-heading nav navbar-default" style="background-color:transparent;">
+                <row>
+                  <div class="col-xs-4">
+                    <h4 class="panel-title">
+                      <a data-toggle="collapse" href="#collapse_term">TERM STRUCTURE</a>
+                    </h4>
+                  </div>
+                  <div class="col-xs-8">
+
+                  </div>
+
+                </row>
+              </div>
+              <div id="collapse_term" class="panel-collapse collapse" style='background-color:#1e2b34'>
+                <!-- <ul class="nav nav-tabs">
+                  <li class="active"><a data-toggle='tab' href="#wrtc">Home</a></li>
+                  <li><a data-toggle='tab' href="#montecarlo">Monte Carlo</a></li>
+                  <li><a href="#">Menu 2</a></li>
+                  <li><a href="#">Menu 3</a></li>
+                </ul> -->
+                <div id='term_structure' class="tab-pane fade in active"></div>
+                <!-- <div id='tab2' class="tab-pane fade in active" style='height:600px'>Hi2</div>
+                <div id='tab3' class="tab-pane fade in active" style='height:600px'>Hi3</div> -->
+                <!-- <div id='wrtc' class="panel-body" style='height:600px'></div> -->
+              </div>
+            </div>
+          </div>
+        <!-- <div class="panel-group" style='outline: 1px solid #11116d;'>
             <div class="panel panel-default">
               <div class="panel-heading">
                 <div class='row'>
                   <div class='col-md-10'>
                     <h4 class="panel-title">
-                      <a data-toggle="collapse" href="#collapse_terms">TERMS</a>
+                      <a data-toggle="collapse" href="#collapse_terms">ML</a>
                     </h4>
                   </div>
                   <div class='col-md-2'>
@@ -143,10 +179,58 @@
                 </div>
               </div>
               <div id="collapse_terms" class="panel-collapse collapse">
-                <div id='terms' class="tab-pane fade in active" style='height:600px'></div>
+                <div id='terms' class="tab-pane fade in active" style='height:600px'>
+                  <p>
+                    include "deck/deck_ml.html"
+                  </p>
+                </div>
               </div>
             </div>
           </div>
+
+
+          <div class="panel-group" style='outline: 1px solid #11116d;'>
+              <div class="panel panel-default">
+                <div class="panel-heading">
+                  <div class='row'>
+                    <div class='col-md-10'>
+                      <h4 class="panel-title">
+                        <a data-toggle="collapse" href="#collapse_info">INFO</a>
+                      </h4>
+                    </div>
+                    <div class='col-md-2'>
+                    </div>
+                  </div>
+                </div>
+                <div id="collapse_info" class="panel-collapse collapse">
+                  <div id='terms' class="tab-pane fade in active" style='height:600px;background-color:#1e2b34;'>
+                    <p>
+                      <div id='testing'>
+                        <table>
+                          <tr>
+                            <th></th>
+                            <td></td>
+                            <th></th>
+                            <td></td>
+                          </tr>
+                        </table>
+
+                      </div>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div> -->
+<!-- ["SECID", "BOARDID", "BID", "OFFER", "SPREAD", "OPEN", "HIGH", "LOW", "LAST", "QUANTITY", "LASTCHANGE", "SETTLEPRICE", "SETTLETOPREVSETTLE", "OPENPOSITION", "NUMTRADES", "VOLTODAY", "VALTODAY", "VALTODAY_USD", "UPDATETIME", "LASTCHANGEPRCNT", "BIDDEPTH", "BIDDEPTHT", "NUMBIDS", "OFFERDEPTH", "OFFERDEPTHT", "NUMOFFERS", "TIME", "SETTLETOPREVSETTLEPRC", "SEQNUM", "SYSTIME", "TRADEDATE", "LASTTOPREVPRICE", "OICHANGE"] -->
+
+
+
+
+
+
+
+
+
 
 
 
@@ -181,6 +265,16 @@
 
     </div>
   </div>
+  <div id='all_terms' class='container'>
+  </div>
+  <div class='container'>
+    <table class='table-responsive'>
+      <tr>
+        <td>Hello</td>
+
+      </tr>
+    </table>
+  </div>
   <!-- /main -->
   <!-- FOOTER -->
   <!-- <footer class="footer">
@@ -188,13 +282,247 @@
   </footer> -->
   <!-- END FOOTER -->
 </div>
+<!-- <script>
+function ticker_header(ticker) {
+  var url = 'https://iss.moex.com/iss/engines/futures/markets/forts/securities/'+ticker+'.json'
+  $.getJSON(url, function (data) {
+    console.log(data)
+  });
+
+};
+</script> -->
+<!-- ["SECID", "BOARDID", "BID", "OFFER", "SPREAD", "OPEN", "HIGH", "LOW", "LAST", "QUANTITY", "LASTCHANGE", "SETTLEPRICE", "SETTLETOPREVSETTLE", "OPENPOSITION", "NUMTRADES", "VOLTODAY", "VALTODAY", "VALTODAY_USD", "UPDATETIME", "LASTCHANGEPRCNT", "BIDDEPTH", "BIDDEPTHT", "NUMBIDS", "OFFERDEPTH", "OFFERDEPTHT", "NUMOFFERS", "TIME", "SETTLETOPREVSETTLEPRC", "SEQNUM", "SYSTIME", "TRADEDATE", "LASTTOPREVPRICE", "OICHANGE"] -->
 <script>
+function navver() {
+  $('#quick_chart_navver').toggle();
+  console.log('navver');
+};
+
+
+function makeTable(data) {
+  global_data = data;
+  var array = data[1].marketdata[1];
+  console.log(array);
+  array.sort(function(a,b){
+  // Turn your strings into dates, and then subtract them
+  // to get a value that is either negative, positive, or zero.
+  return new Date(b.LASTTRADEDATE) - new Date(a.LASTTRADEDATE);
+  });
+
+  console.log(array);
+  // array = data.marketdata.data;
+  console.log("in make table");
+  // console.log(array[0]['SECID']);
+  // console.log(data.marketdata.columns);
+  // console.log(data.marketdata.data);
+  var heads = ["SECID","LAST","SETTLEPRICE","OPENPOSITION","VALTODAY","LASTCHANGEPRCNT","OICHANGE"]
+  // console.log(array[0][33]);
+  // console.log('yeah?');
+    var table = document.createElement('table');
+    table.className = 'table';
+    var headrow = document.createElement('thead');
+    for (var h in heads) {
+      var headcell = document.createElement('th');
+      h = heads[h];
+      headcell.textContent = h;
+      headrow.append(headcell);
+    };
+    table.appendChild(headrow);
+    var tablebody = document.createElement('tbody');
+    table.append(tablebody)
+    for (var i = 0; i < array.length; i++) {
+        var row = document.createElement('tr');
+        // console.log(array[0]);
+        for (var j in heads) {
+            var cell = document.createElement('td');
+            j = heads[j];
+            // console.log(j);
+            // console.log(array[i][j]);
+            // console.log('you pass');
+            cell.textContent = array[i][j];
+            // console.log(array[i][j]);
+            row.appendChild(cell);
+            // console.log(cell.textContent);
+        }
+        tablebody.appendChild(row);
+    };
+    // console.log(table);
+    $("#term_structure").empty().append(table);
+    return table;
+};
+// function table_getter() {
+//   var url = 'https://iss.moex.com/iss/engines/futures/markets/forts/securities.json?sectypes=RI&iss.json=extended'
+//   $.getJSON(url, function (data) {
+//     console.log('doing it:');
+//     // data = data[1].marketdata[1];
+//     // console.log(data);
+//     makeTable(data);
+//   });
+// };
+// table_getter();
+
+
+
+
+function asset_grouping(assetcode) {
+  var url = 'https://iss.moex.com/iss/engines/futures/markets/forts/securities.json?sectypes='+assetcode+'&iss.json=extended'
+  $.getJSON(url, function (data) {
+    console.log(assetcode);
+    makeTable(data);
+  });
+};
+
+function ticker_header(ticker) {
+  var url = 'https://iss.moex.com/iss/engines/futures/markets/forts/securities/'+ticker+'.json?iss.json=extended'
+  $.getJSON(url, function (data) {
+    // console.log(data[1].marketdata[1][0]);
+    var ac = data[1].securities[1][0].SECTYPE;
+    var shortname = data[1].securities[1][0].SHORTNAME;
+    var last = data[1].marketdata[1][0].LAST;
+    var last_change_prcnt = data[1].marketdata[1][0].LASTCHANGEPRCNT;
+    $("#shortname").text(shortname);
+    // $("#shortname").text(shortname);
+    $("#LAST").text('Last: '+last);
+    $("#LASTCHANGEPRCNT").text('Pct Ch: '+last_change_prcnt);
+    $("#ASSETCODE").text(ac);
+    $("#UPDATETIME").text(data[1].marketdata[1][0].UPDATETIME)
+    asset_grouping(ac);
+  });
+
+};
+
+  function draw_term_structure() {
+    console.log('arr');
+    var term_data_mkt = global_data[1].marketdata[1];
+    var term_data_sec = global_data[1].securities[1];
+    term_data_sec.sort(function(a,b){
+  // Turn your strings into dates, and then subtract them
+  // to get a value that is either negative, positive, or zero.
+  return new Date(b.LASTTRADEDATE) - new Date(a.LASTTRADEDATE);
+});
+term_data_mkt.sort(function(a,b){
+// Turn your strings into dates, and then subtract them
+// to get a value that is either negative, positive, or zero.
+return new Date(b.LASTTRADEDATE) - new Date(a.LASTTRADEDATE);
+});
+console.log(term_data_mkt);
+
+    var prev_settle = [];
+    var settle = [];
+    var last = [];
+    var tdl =
+    console.log(term_data_mkt.length);
+
+    for (var i = 0; i < term_data_mkt.length; i++) {
+      // console.log(term_data_mkt.length);
+      // console.log('hello');
+        prev_settle.push([
+            Date.parse(term_data_sec[i]['LASTTRADEDATE']), // the date
+            // console.log(term_data_sec[i]['LASTTRADEDATE']),
+            term_data_sec[i]['PREVSETTLEPRICE'], // prevsetleprice
+        ]);
+
+        settle.push([
+            Date.parse(term_data_sec[i]['LASTTRADEDATE']), // the date
+            term_data_mkt[i]['SETTLEPRICE'] // the volume
+        ]);
+        if (term_data_mkt[i]['LAST'] > 0) {
+          last.push([Date.parse(term_data_sec[i]['LASTTRADEDATE']),term_data_mkt[i]['LAST']]);
+        }
+    };
+    // console.log(prev_settle);
+    // console.log(settle);
+    // console.log(last);
+    Highcharts.chart('wrtc', {
+
+    chart: {
+        type: 'line'
+    },
+    title: {
+        text: glob_ticker+' Term Structure'
+    },
+    // subtitle: {
+    //     text: 'Source: WorldClimate.com'
+    // },
+    // xAxis: {
+    //     categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+    // },
+    // yAxis: {
+    //     title: {
+    //         text: 'Temperature (°C)'
+    //     }
+    // },
+    xAxis: {
+        type: 'datetime',
+        // dateTimeLabelFormats: { // don't display the dummy year
+        //     month: '%e. %b',
+        //     year: '%b'
+        // },
+        title: {
+            text: 'Date'
+        }
+    },
+    plotOptions: {
+        line: {
+            dataLabels: {
+                enabled: true
+            },
+            enableMouseTracking: true
+        }
+    },
+    series: [{
+        name: 'Prev Settle',
+        data: prev_settle,
+    }, {
+        name: 'Settle',
+        data: settle,
+    }, {
+        name: 'Last',
+        data: last,
+    }],
+    // series: [{
+    //     name: 'Tokyo',
+    //     data: [7.0, 6.9, 9.5, 14.5, 18.4, 21.5, 25.2, 26.5, 23.3, 18.3, 13.9, 9.6]
+    // }, {
+    //     name: 'London',
+    //     data: [3.9, 4.2, 5.7, 8.5, 11.9, 15.2, 17.0, 16.6, 14.2, 10.3, 6.6, 4.8]
+    // }]
+});
+    // console.log(term_data);
+
+  };
+
+
   function draw_chart(ticker) {
+  $("#instrument").text(ticker);
+  ticker_header(ticker);
+  // var url1 = 'http://iss.moex.com/iss/engines/futures/markets/forts/securities/RIU7.json'
+
+
+//   $.getJSON( url1, function( data ) {
+//   var items = [];
+//   data = data.marketdata.data[0];
+//   // $.each( data, function( key, val ) {
+//   //   items.push( "<li id='" + key + "'>" + val + "</li>" );
+//   // });
+//
+//   // $( "<ul/>", {
+//   //   "class": "my-new-list",
+//   //   html: items.join( "" )
+//   // }).appendTo( "testing" );
+// });
 
 
 
-  var url2 = 'http://iss.moex.com/iss/engines/futures/markets/forts/securities/'+ticker+'/candles.json?from=2010-08-08&till=2017-06-21&interval=24&start=0&iss.meta=off'
+
+
+
+
+  var url2 = 'http://iss.moex.com/iss/engines/futures/markets/forts/securities/'+ticker+'/candles.json?from=2010-08-08&interval=24&start=0&iss.meta=off'
   $.getJSON(url2, function (data) {
+
+    // defining global ticker variable
+    glob_ticker = ticker;
 
   // split the data set into ohlc and volume
   var ohlc = [],

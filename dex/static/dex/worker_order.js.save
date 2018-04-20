@@ -1,0 +1,127 @@
+console.log('order worker is here')
+csb = d3.select('#orders')
+	.append('form')
+	.attr('action','')
+	.attr()
+	.append('button')
+	.attr('type','button')
+	.attr('id','confirmsendbutton')
+	.attr('onclick','confirmSend()')
+	.text('Confirm Send')
+
+cuser_firm = 'jbt1'
+
+function confirmSend() {
+$('#alertwindow').toggle()
+formi = d3.select('#formita').append('table').attr('id','ultimate')
+awt = formi.append('table')
+var awtr = awt.append('tr')
+
+awtr.append('input').attr('value','Code').attr('style','width:100px')
+awtr.append('input').attr('value','Side').attr('style','width:40px')
+awtr.append('input').attr('value','Qty').attr('style','width:40px')
+awtr.append('input').attr('value','Price')
+awtr.append('input').attr('value','Value')
+awtr.append('input').attr('value','Margin')
+odahs = d3.select('#order_tbody').selectAll('tr')["_groups"][0]
+odahs.forEach(function(d) {
+	console.log(d)
+	var qty = Number(d3.select(d).select('.qty_input')["_groups"][0][0].value)
+	var price = Number(d3.select(d).select('.order_side_price')["_groups"][0][0].innerText)
+	var side = d3.select(d).select('.order_side_val')["_groups"][0][0].innerText
+	var code = d.id.split('_')[0]
+	var pstepval = margins[code].pstepval
+	var val = price * qty * pstepval / 10
+
+	if (side == 'Buy') {var mg = margins[code].buydepo}
+	if (side == 'Sell') {var mg = margins[code].bgonp}
+	mg = mg * qty
+	// if (side == 'Sell') {var mg = margins[code].bgop}
+	var otype = margins[code].optiontype
+	var trading_status = margins[code].tradingstatus
+
+
+	var awtr = awt.append('tr')
+	var now = new Date()
+	awtr.append('input').attr('name','FIRM').attr('hidden',true).attr('value',cuser)
+	awtr.append('input').attr('name','ACCOUNT').attr('hidden',true).attr('value',cuser_firm)
+	awtr.append('input').attr('name','STATUS').attr('hidden',true).attr('value',trading_status)
+	awtr.append('input').attr('name','ORDERTIME').attr('hidden',true).attr('value',now)
+	awtr.append('input').attr('name','PERIOD').attr('hidden',true).attr('value',now)
+	awtr.append('input').attr('name','BALANCE').attr('hidden',true).attr('value',0)
+	awtr.append('input').attr('name','VISIBLE_QTY').attr('hidden',true).attr('value',0)
+	awtr.append('input').attr('name','SECNAME').attr('readonly','readonly').attr('value',code).attr('style','width:100px')
+	awtr.append('input').attr('name','BUYSELL').attr('readonly','readonly').attr('value',side).attr('style','width:40px')
+	awtr.append('input').attr('name','QTY').attr('readonly','readonly').attr('value',qty).attr('style','width:40px')
+	awtr.append('input').attr('name','PRICE').attr('readonly','readonly').attr('value',price)
+	awtr.append('input').attr('name','VALUE').attr('readonly','readonly').attr('value',val.toFixed(2))
+	awtr.append('input').attr('name','MARGIN').attr('readonly','readonly').attr('value',mg)
+})
+sway = d3.select('#formita').append('input').attr('type','submit').attr('value','Sway').attr('id','sway')
+bye = d3.select('#formita').append('button').attr('onclick','cancelConfirm()').attr('type','button').text('BYE').attr('id','bye')
+
+
+}
+
+
+$('#formita').submit(function(e){
+	$('#alertwindow').toggle()
+    $.post('/dex/ordercomm/', $(this).serialize(),function(data){
+      console.log(data)
+      window.magi = JSON.parse(data)
+      confirmationTable()
+    });
+    e.preventDefault();
+});
+
+// $('#alertwindow').toggle()
+
+
+function cancelConfirm() {
+	d3.select('#ultimate').remove()
+	d3.select('#sway').remove()
+	d3.select('#bye').remove()
+	$('#alertwindow').toggle()
+}
+
+function confirmationTable() {
+	d3.select('#ultimate').remove()
+	d3.select('#sway').remove()
+	d3.select('#bye').remove()
+	$('#alertwindow').toggle()
+	var table = d3.select('#formita').append('table').attr('id','confirmationtable')
+	var row = table.append('tr')
+	row.append('td').text('Order Confirmation ID')
+	row.append('td').text('CODE')
+	row.append('td').text('QTY')
+	row.append('td').text('PRICE')
+	row.append('td').text('SIDE')
+	magi.message.legs.forEach(function(d) {
+		var row = table.append('tr')
+		row.append('td').text(d.id)
+		row.append('td').text(d.SECNAME)
+		row.append('td').text(d.QTY)
+		row.append('td').text(d.PRICE)
+		row.append('td').text(d.BUYSELL)
+	})
+	table.append('button').attr('type','button').attr('onclick','byeBye()').text('BYE')
+	
+
+}
+
+function byeBye() {
+	d3.select('#confirmationtable').remove()
+	$('#alertwindow').toggle()
+	clearOrderTable()
+}
+
+function clearOrderTable() {
+	var rems = d3.select('#order_tbody').selectAll('.removedor')["_groups"][0]
+	rems.forEach(function(d){
+		remove_order(d)
+	})
+	console.log('cleared order table')
+}
+
+
+console.log('order worker is done')
