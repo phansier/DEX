@@ -421,7 +421,7 @@ function baltic() {
 }
 
 //var socket = io.connect({transports: ['websocket']});
-var socket = io.connect("http://139.59.208.173:3000/",{transports: ['websocket']});
+var socket = io.connect("https://139.59.208.173:3000/",{transports: ['websocket']});
 
 socket.on('fixa', function(msg){
 window.msg = msg
