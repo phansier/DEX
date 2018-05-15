@@ -2,6 +2,8 @@
 
 This is the repository of the Options Trading Platform [MOSKVANT](https://moskvant.com).
 
+[Github Repo](https://github.com/lacanoa/DEX)
+
 ## About
 
 I set out to build an 'Options Trading Platform', but what is an 'options trading platform'? It is an interface that gives the user the ability to visualize and analyze information about options, and execute trades with these options. Thus, the platform has two main tasks: analysis, and execution.
