@@ -19,8 +19,8 @@ def gffD(symbol,delta):
 	yfull = tda.strftime('%d.%m.%Y')
 
 	# symbol = 'RI'
-	fin_code = emo[symbol] 
-	symbol_code = 'SPFB.'+symbol  
+	fin_code = emo[symbol]
+	symbol_code = 'SPFB.'+symbol
 	# dt = '18'
 	dt = today.strftime('%d')
 	# mt = '04'
@@ -53,7 +53,9 @@ today = datetime.datetime.today()
 yesterday = today - datetime.timedelta(days=1)
 yesterdayf = yesterday.strftime('%Y-%m-%d')
 
-DF = pd.read_pickle('FuturesDaily.p')
-DF = DF.append(df.loc[yesterdayf])
-
+try:
+	DF = pd.read_pickle('FuturesDaily.p')
+	DF = DF.append(df.loc[yesterdayf])
+except:
+	DF = df.loc[yesterdayf]
 DF.to_pickle('FuturesDaily.p')

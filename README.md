@@ -4,6 +4,19 @@ This is the repository of the Options Trading Platform [MOSKVANT](https://moskva
 
 [Github Repo](https://github.com/lacanoa/DEX)
 
+## How to launch
+
+1) Launch FuturesDailyScript.py to generate FuturesDaily.p
+2) Launch this_script_gets_open_positions.py to generate borapik_indexed.p
+3) Install Postgres. 
+   Create user **project_user_jbt**
+   In MacOs with Homebrew setup of Postgres:
+   ```
+   brew install postgres
+   /usr/local/opt/postgres/bin/createuser -s project_user_jbt
+   createdb myproject
+   ```
+
 ## About
 
 I set out to build an 'Options Trading Platform', but what is an 'options trading platform'? It is an interface that gives the user the ability to visualize and analyze information about options, and execute trades with these options. Thus, the platform has two main tasks: analysis, and execution.

@@ -4,7 +4,7 @@
   "description": "for_quik",
   "main": "index.js",
   "dependencies": {
-    "ethereumjs-testrpc": "^3.0.3",
+    "ethereumjs-testrpc": "^6.0.3",
     "express": "^4.15.2",
     "jquery-ui": "^1.12.1",
     "pg": "^7.3.0",

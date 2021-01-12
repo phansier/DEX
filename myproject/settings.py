@@ -25,7 +25,7 @@ SECRET_KEY = 'g55avt68-aowl_-vqaci61ga$x%qs^g9d9%0yl&4=2nlv##+71'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['moskvant.com','139.59.208.173','0.0.0.0','www.moskvant.com']
+ALLOWED_HOSTS = ['moskvant.com','139.59.208.173','0.0.0.0','www.moskvant.com', '127.0.0.1']
 
 ADMINS = [('JBT', 'moskvant.ai@gmail.com')]
 
