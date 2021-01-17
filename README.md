@@ -13,9 +13,17 @@ This is the repository of the Options Trading Platform [MOSKVANT](https://moskva
    In MacOs with Homebrew setup of Postgres:
    ```
    brew install postgres
+   pg_ctl -D /usr/local/var/postgres start
    /usr/local/opt/postgres/bin/createuser -s project_user_jbt
    createdb myproject
    ```
+   To stop postgres: `pg_ctl -D /usr/local/var/postgres stop`
+4) Launch `python manage.py migrate` to migrate
+5) Launch `manage.py createsuperuser --username=user --email=user@ya.ru`
+
+Next time: 
+Start postgress: `pg_ctl -D /usr/local/var/postgres start`
+Run server: `python manage.py runserver`
 
 ## About
 
